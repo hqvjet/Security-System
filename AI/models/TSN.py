@@ -62,6 +62,7 @@ class TSN:
             epochs=EPOCH,
             batch_size=BATCH_SIZE,
             verbose=1,
+            validation_data=(self.valid_input, self.valid_output),
             callbacks=[early_stopping, checkpoint]
         )
 
