@@ -117,5 +117,5 @@ def train():
   print(type(train_input[0]))
 
   tsn_model = TSN(train_input, train_output, valid_input, valid_output)
-  tsn_model.trainModel()
+  # tsn_model.trainModel()
   tsn_model.testModel(test_input, test_output)
