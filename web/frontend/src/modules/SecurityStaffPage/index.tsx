@@ -10,17 +10,12 @@ export default function SecurityStaffPage() {
     const [alert, setAlert] = useState(false)
 
     return (
-        <Col className='h-screen bg-gray-900'>
-            <Row align={'middle'} justify={'end'} className='w-full fixed p-5'>
-                <AvatarField />
-            </Row>
-            <Row className='w-full h-full' justify={'center'} align={'middle'}>
-                {!video ? (
-                    <Title level={1}><p className='text-green-500'>NO VIOLENCE DETECTED</p></Title>
-                ) : (
-                    <div>video</div>
-                )}
-            </Row>
-        </Col>
+        <>
+            {!video ? (
+                <Title level={1}><p className='text-green-500'>NO VIOLENCE DETECTED</p></Title>
+            ) : (
+                <div>video</div>
+            )}
+        </>
     )
 }
