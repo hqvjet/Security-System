@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-from loadModel import load_model
+from loadModel import getModel
 import numpy as np
 
 model = Blueprint('model', __name__)
-tsn_model = load_model()
+tsn_model = getModel()
 
 @model.post('/predict')
 def predict():
