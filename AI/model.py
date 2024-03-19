@@ -9,8 +9,8 @@ tsn_model = getModel()
 def predict():
     data = request.get_json()
     frames = np.array(data.get('frames'))
-    
-    prediction = tsn_model.predict(frames).tolist()
+    print(frames.shape)   
+    prediction = tsn_model.predict([frames]).tolist()
     
     return jsonify({'prediction': prediction})
     
