@@ -1,3 +1,4 @@
+import sys
 import cv2
 import time
 from constants import *
@@ -6,7 +7,7 @@ from collections import deque
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import requests
-import dotenv import load_dotenv
+from dotenv import load_dotenv
 
 load_dotenv()
 API_URL = os.getenv('API_URL')
@@ -48,8 +49,8 @@ def makeRequest(frames):
     payload = {
         'frames': frames
     }
-
-    response = requests.post(API_URL, json=payload)
+    print(len(frames))
+    response = requests.post(API_URL + '/predict', json=payload)
 
     if response.status_code == 200:
         data = response.json()
@@ -57,12 +58,17 @@ def makeRequest(frames):
     else:
         print('ERROR OCCURED WHILE POSTING')
 
-def vectorize():
-    vectors = []
-    for frame in frames_dequeue:
-        vectors.append(frame.flatten())
-
-    return vectors
+# def vectorize():
+#     vectors = []
+#     for frame in frames_dequeue:
+#         vectors.append(frame.flatten())
+#     
+#     # print(len(vectors))
+#     print(vectors[0])
+#     print(vectors[0].shape)
+#     print(type(vectors[0]))
+#     sys.exit()
+#     return vectors
 
 for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
     image = frame.array
@@ -73,14 +79,14 @@ for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=
     #     break
     # out.write(frame)
     cv2.imshow('Camera', image)
-
+    vector = image.reshape((image.shape[0], image.shape[1], 3)).tolist()
     if len(frames_dequeue) >= 8:
-        vectorized_frames = vectorize()
-        makeRequest(vectorized_frames)
+        # vectorized_frames = vectorize()
+        makeRequest(list(frames_dequeue))
         frames_dequeue.popleft()
-        frames_dequeue.append(image)
+        frames_dequeue.append(vector)
     else:
-        frames_dequeue.append(image)
+        frames_dequeue.append(vector)
 
     if cv2.waitKey(1) and 0xFF == ord('q'):
         break
