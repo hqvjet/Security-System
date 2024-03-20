@@ -8,6 +8,7 @@ from picamera import PiCamera
 from picamera.array import PiRGBArray
 import requests
 from dotenv import load_dotenv
+import numpy as np
 
 load_dotenv()
 API_URL = os.getenv('API_URL')
@@ -16,21 +17,8 @@ camera = PiCamera()
 camera.resolution = SCREEN_RESOLUTION
 camera.framerate = FRAME_RATE
 rawCapture = PiRGBArray(camera, size=SCREEN_RESOLUTION)
-# cap = cv2.VideoCapture(0)
 
 frames_dequeue = deque() 
-
-# vid = cv2.VideoWriter_fourcc(*'H264')
-# out = cv2.VideoWriter('output.mp4', vid, 8.0, (500, 500))
-#
-# if not cap.isOpened():
-#     print('Camera not found')
-#     exit()
-# else:
-#     print('Camera is on')
-
-# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
-# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 
 def videoToFrames(video_path):
     video = cv2.VideoCapture(video_path)
@@ -46,10 +34,9 @@ def videoToFrames(video_path):
     frame_count = 0
 
 def makeRequest(frames):
-    payload = {
-        'frames': frames
+    playload = {
+        'frames': np.array(frames).tostring()
     }
-    print(len(frames))
     response = requests.post(API_URL + '/predict', json=payload)
 
     if response.status_code == 200:
@@ -58,31 +45,15 @@ def makeRequest(frames):
     else:
         print('ERROR OCCURED WHILE POSTING')
 
-# def vectorize():
-#     vectors = []
-#     for frame in frames_dequeue:
-#         vectors.append(frame.flatten())
-#     
-#     # print(len(vectors))
-#     print(vectors[0])
-#     print(vectors[0].shape)
-#     print(type(vectors[0]))
-#     sys.exit()
-#     return vectors
-
 for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
     image = frame.array
-    # ret, frame = cap.read()
-    #
-    # if not ret:
-    #     print('Cant read frame from camera')
-    #     break
-    # out.write(frame)
+
     cv2.imshow('Camera', image)
-    vector = image.reshape((image.shape[0], image.shape[1], 3)).tolist()
+
+    vector = image.reshape((image.shape[0], image.shape[1], 3))
     if len(frames_dequeue) >= 8:
         # vectorized_frames = vectorize()
-        makeRequest(list(frames_dequeue))
+        makeRequest(frames_dequeue)
         frames_dequeue.popleft()
         frames_dequeue.append(vector)
     else:
@@ -90,11 +61,7 @@ for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=
 
     if cv2.waitKey(1) and 0xFF == ord('q'):
         break
-    # time.sleep(FRAME_INTERVAL)
+
     rawCapture.truncate(0)
 
 cv2.destroyAllWindows()
-# finally:
-#     cap.release()
-#     out.release()
-#     cv2.destroyAllWindows()
