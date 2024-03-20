@@ -7,9 +7,8 @@ tsn_model = getModel()
 
 @model.post('/predict')
 def predict():
-    data = request.json()
-    frames = data['frames']
-    frames = np.fromstring(frames, dtype=np.int32).reshape(8, 500, 500, 3)
+    data = request.get_data()
+    frames = np.frombuffer(data, dtype=np.uint8).reshape(8, 500, 500, 3)
     print(frames.shape)
 
     prediction = tsn_model.predict(np.array([frames])).tolist()
