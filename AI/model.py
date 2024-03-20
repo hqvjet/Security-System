@@ -7,9 +7,11 @@ tsn_model = getModel()
 
 @model.post('/predict')
 def predict():
-    data = request.get_json()
-    frames = np.array(data.get('frames'))
-    print(frames.shape)   
+    data = request.json()
+    frames = data['frames']
+    frames = np.fromstring(frames, dtype=np.int32).reshape(8, 500, 500, 3)
+    print(frames.shape)
+
     prediction = tsn_model.predict(np.array([frames])).tolist()
     
     return jsonify({'prediction': prediction})
