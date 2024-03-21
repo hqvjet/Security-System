@@ -9,6 +9,7 @@ from picamera.array import PiRGBArray
 import requests
 from dotenv import load_dotenv
 import numpy as np
+import threading
 
 load_dotenv()
 API_URL = os.getenv('API_URL')
@@ -18,7 +19,9 @@ camera.resolution = SCREEN_RESOLUTION
 camera.framerate = FRAME_RATE
 rawCapture = PiRGBArray(camera, size=SCREEN_RESOLUTION)
 
-frames_dequeue = deque() 
+frames_deque = deque() 
+lost_deque = deque()
+lock = False
 
 def videoToFrames(video_path):
     video = cv2.VideoCapture(video_path)
@@ -34,10 +37,15 @@ def videoToFrames(video_path):
     frame_count = 0
 
 def makeRequest(frames):
+    global lock
+    global frames_deque
     frames_string = np.array(frames).tobytes()
     print('requesting...')
     response = requests.post(API_URL + '/predict', data=frames_string)
     print('done')
+
+    frames_deque = deque()
+    lock = False
 
     if response.status_code == 200:
         data = response.json()
@@ -51,11 +59,14 @@ for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=
     cv2.imshow('Camera', image)
     print('cap')
     vector = image.reshape((image.shape[0], image.shape[1], 3))
-    if len(frames_dequeue) >= 8:
-        makeRequest(frames_dequeue)
-        frames_dequeue = deque()
+    print(lock)
+    print(len(frames_deque))
+    if not lock:
+        if len(frames_deque) >= 8:
+            threading.Thread(target=makeRequest, args=(frames_deque,)).start()
+            lock = True
 
-    frames_dequeue.append(vector)
+        frames_deque.append(vector)
 
     if cv2.waitKey(1) and 0xFF == ord('q'):
         break
