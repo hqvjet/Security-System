@@ -35,28 +35,27 @@ def videoToFrames(video_path):
 
 def makeRequest(frames):
     frames_string = np.array(frames).tobytes()
-    # print(frames_string)
-    # print(type(frames_string))
-    # payload = { 'frames': frames_string }
+    print('requesting...')
     response = requests.post(API_URL + '/predict', data=frames_string)
+    print('done')
 
     if response.status_code == 200:
         data = response.json()
         print(data)
     else:
         print('ERROR OCCURED WHILE POSTING')
+
 for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
     image = frame.array
 
     cv2.imshow('Camera', image)
+    print('cap')
     vector = image.reshape((image.shape[0], image.shape[1], 3))
     if len(frames_dequeue) >= 8:
-        # vectorized_frames = vectorize()
         makeRequest(frames_dequeue)
-        frames_dequeue.popleft()
-        frames_dequeue.append(vector)
-    else:
-        frames_dequeue.append(vector)
+        frames_dequeue = deque()
+
+    frames_dequeue.append(vector)
 
     if cv2.waitKey(1) and 0xFF == ord('q'):
         break
