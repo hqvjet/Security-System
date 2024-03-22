@@ -60,14 +60,27 @@ for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=
     print('cap')
     vector = image.reshape((image.shape[0], image.shape[1], 3))
     print(lock)
-    print(len(frames_deque))
+    print('frames', len(frames_deque))
+    print('lost', len(lost_deque))
     if not lock:
+
+        # Check lost_deque
+        if len(lost_deque) != 0:
+            if len(lost_deque) <= 8:
+                frames_deque = deque(lost_deque)
+                lost_deque = deque()
+            else:
+                frames_deque = deque(lost_deque[0:8])
+                lost_deque = deque(lost_deque[8:])
+
         if len(frames_deque) >= 8:
             threading.Thread(target=makeRequest, args=(frames_deque,)).start()
             lock = True
 
         frames_deque.append(vector)
-
+    else:
+        lost_deque.append(vector)
+    
     if cv2.waitKey(1) and 0xFF == ord('q'):
         break
 
