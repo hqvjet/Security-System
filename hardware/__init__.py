@@ -12,7 +12,8 @@ import numpy as np
 import threading
 
 load_dotenv()
-API_URL = os.getenv('AI_API_URL')
+AI_API_URL = os.getenv('AI_API_URL')
+SERVER_API_URL = os.getenv('SERVER_API_URL')
 
 camera = PiCamera()
 camera.resolution = SCREEN_RESOLUTION
@@ -52,7 +53,7 @@ def makeRequest(frames):
     global frames_deque
     frames_string = np.array(frames).tobytes()
     print('requesting...')
-    response = requests.post(API_URL + '/predict', data=frames_string)
+    response = requests.post(AI_API_URL + '/predict', data=frames_string)
     print('done')
 
     frames_deque = deque()
