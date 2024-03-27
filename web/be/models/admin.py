@@ -1,11 +1,11 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 from sqlalchemy.orm import relationship
 from db import Base
 
 class Admin(Base):
-    __tablename__ = 'Admin'
+    __tablename__ = 'admin'
 
-    ID = Column(String(50), primary_key=True)
+    id = Column(String(50), primary_key=True)
     access_key = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False)
     password = Column(String(100), nullable=False)
@@ -16,9 +16,13 @@ class Admin(Base):
     phone = Column(String(20), nullable=False)
     description = Column(Text)
     role = Column(String(50), nullable=False)
-    CCCD = Column(String(20), nullable=False)
+    cccd = Column(String(20), nullable=False)
     avatar = Column(String(255))
 
-    police = relationship("Police", uselist=False, back_populates="admin")
-    security_staff = relationship("Security_Staff", uselist=False, back_populates="admin")
-    iot_devices = relationship("IoT_Device", back_populates="admin")
+    __mapper_args__ = {
+        'polymorphic_identity': 'admin',
+        'concrete': True
+    }
+
+    def __repr__(self):
+        return f"Admin(id='{self.id}', username='{self.username}', full_name='{self.full_name}', email='{self.email}')"

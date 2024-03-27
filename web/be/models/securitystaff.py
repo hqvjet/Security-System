@@ -1,13 +1,11 @@
 from sqlalchemy import Column, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
-from admin import Admin
+from models.admin import Admin
 
-class Security_Staff(Admin):
-    __tablename__ = 'Security_Staff'
+class SecurityStaff(Admin):
+    __tablename__ = 'security_staff'
+    __mapper_args__ = {'polymorphic_identity': 'security_staff'}
 
-    ID = Column(String(50), ForeignKey('Admin.ID'), primary_key=True)
+    id = Column(String(50), ForeignKey('admin.id'), primary_key=True)
     joined = Column(Date, nullable=False)
     work_at = Column(String(255), nullable=False)
-
-    admin = relationship("Admin", back_populates="security_staff")
-    videos = relationship("Video", back_populates="security_staff")
