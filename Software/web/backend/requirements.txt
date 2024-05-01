@@ -1,0 +1,7 @@
+flask
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2
+python-dotenv
+GeoAlchemy2
