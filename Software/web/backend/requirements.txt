@@ -2,6 +2,6 @@ flask
 fastapi
 uvicorn[standard]
 sqlalchemy
-psycopg2
+psycopg2-binary
 python-dotenv
 GeoAlchemy2

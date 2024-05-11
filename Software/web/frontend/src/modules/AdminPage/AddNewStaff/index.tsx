@@ -1,25 +1,26 @@
 'use client'
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Select } from 'antd';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-const RegisterForm = () => {
+const AddStaffForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [form] = Form.useForm();
+  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
   const onFinish = async (values: { [key: string]: any; }) => {
     try {
       setLoading(true);
-      setMessage('User registered successfully: ' + JSON.stringify(values));
-      const response = await axios.post('http://localhost:8000/register-admin', values);
-      console.log('User registered successfully:', response.data);
-      
+      setMessage('Staff added successfully: ' + JSON.stringify(values));
+      const response = await axios.post('http://localhost:8000/add-staff', values);
+      console.log('Staff added successfully:', response.data);
       setLoading(false);
-      router.push('/login');
+      router.push('/admin');
     } catch (error) {
-      console.error('Error registering user:', error);
+      console.error('Error adding staff:', error);
       setLoading(false);
     }
   };
@@ -27,26 +28,38 @@ const RegisterForm = () => {
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
-  const handleLogin = () => {
-    router.push('/login');
+  
+  const { Option } = Select;
+
+  const handleRoleChange = (value: string) => {
+    setShowAdditionalFields(value === 'police');
   };
+
   return (
     <div>
       {message && <p className='text-gray-50'>{message}</p>}
       <Form
-        name="register"
+        name="addStaff"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
+        initialValues={{ role: 'security' }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item
+          label="ID"
+          name="id"
+          rules={[{ required: true, message: 'Please input ID!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
           label="Username"
           name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          rules={[{ required: true, message: 'Please input username!' }]}
         >
           <Input />
         </Form.Item>
@@ -59,7 +72,7 @@ const RegisterForm = () => {
           <Input.Password />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="Confirm Password"
           name="confirmPassword"
           dependencies={['password']}
@@ -76,12 +89,12 @@ const RegisterForm = () => {
           ]}
         >
           <Input.Password />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, type: 'email', message: 'Please input your email!' }]}
+          rules={[{ required: true, type: 'email', message: 'Please input email!' }]}
         >
           <Input />
         </Form.Item>
@@ -89,7 +102,7 @@ const RegisterForm = () => {
         <Form.Item
           label="Full Name"
           name="full_name"
-          rules={[{ required: true, message: 'Please input your full name!' }]}
+          rules={[{ required: true, message: 'Please input full name!' }]}
         >
           <Input />
         </Form.Item>
@@ -97,7 +110,7 @@ const RegisterForm = () => {
         <Form.Item
           label="Age"
           name="age"
-          rules={[{ required: true, message: 'Please input your age!' }]}
+          rules={[{ required: true, message: 'Please input age!' }]}
         >
           <Input type="number" />
         </Form.Item>
@@ -105,7 +118,7 @@ const RegisterForm = () => {
         <Form.Item
           label="Address"
           name="address"
-          rules={[{ required: true, message: 'Please input your address!' }]}
+          rules={[{ required: true, message: 'Please input address!' }]}
         >
           <Input />
         </Form.Item>
@@ -113,7 +126,7 @@ const RegisterForm = () => {
         <Form.Item
           label="Phone"
           name="phone"
-          rules={[{ required: true, message: 'Please input your phone number!' }]}
+          rules={[{ required: true, message: 'Please input phone number!' }]}
         >
           <Input />
         </Form.Item>
@@ -121,31 +134,65 @@ const RegisterForm = () => {
         <Form.Item
           label="CCCD"
           name="cccd"
-          rules={[{ required: true, message: 'Please input your CCCD!' }]}
+          rules={[{ required: true, message: 'Please input CCCD!' }]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
-          name="agree"
-          valuePropName="checked"
-          wrapperCol={{ offset: 8, span: 16 }}
-          rules={[{ required: true, message: 'Please agree to terms and conditions!' }]}
+          label="Description"
+          name="description"
         >
-          <Checkbox>I agree to the terms and conditions</Checkbox>
+          <Input />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item
+          label="Work At"
+          name="work_at"
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Role"
+          name="role"
+          rules={[{ required: true, message: 'Please select a role!' }]}
+        >
+          <Select onChange={handleRoleChange}>
+          <Option value="security">Security</Option>
+            <Option value="police">Police</Option>
+          </Select>
+        </Form.Item>
+
+        {showAdditionalFields && (
+          <>
+            <Form.Item
+              label="Certification"
+              name="certification"
+              rules={[{ required: true, message: 'Please input certification!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Work History"
+              name="work_history"
+              rules={[{ required: true, message: 'Please input work history!' }]}
+            >
+              <Input />
+            </Form.Item>
+          </>
+        )}
+
+        <Form.Item
+          wrapperCol={{ offset: 8, span: 16 }}
+        >
           <Button type="primary" htmlType="submit" loading={loading}>
-            Register
+            Add Staff
           </Button>
         </Form.Item>
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        Already have an account? <Button type="link" onClick={handleLogin}>Login</Button>
-      </div>
       </Form>
     </div>
   );
 };
 
-export default RegisterForm;
+export default AddStaffForm;

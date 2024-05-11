@@ -1,31 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 from db import SessionLocal
 from models.police import Police
-from schemas.police import PoliceCreate
-from passlib.hash import bcrypt
+from schemas.police import PoliceCreate, Police as PoliceSchema
 
-router = APIRouter()
+router = APIRouter(tags=['Police'])
 
-# Route to register a new police officer
-@router.post("/register")
-async def register_police_officer(
-    police_data: PoliceCreate,
-    db: Session = Depends(SessionLocal),
-):
-    hashed_password = bcrypt.hash(police_data.password)
-    new_police = Police(
-        username=police_data.username,
-        password=hashed_password,
-        full_name=police_data.full_name,
-        age=police_data.age,
-        email=police_data.email,
-        address=police_data.address,
-        phone=police_data.phone,
-        department=police_data.department,
-        badge_number=police_data.badge_number
-    )
-    db.add(new_police)
-    db.commit()
-    db.refresh(new_police)
-    return {"message": "New police officer registered successfully"}
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@router.get("/list_police", response_model=List[PoliceSchema])
+def get_police_list(db: Session = Depends(get_db)):
+    police_list = db.query(Police).filter(Police.role == 'police').all()
+    return police_list
+
+
+@router.post("/police")
+def create_police(police_data: PoliceCreate, db: Session = Depends(get_db)):
+    try:
+        db_police = Police(**police_data.dict())
+        db.add(db_police)
+        db.commit()
+        db.refresh(db_police)
+        
+        return db_police
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

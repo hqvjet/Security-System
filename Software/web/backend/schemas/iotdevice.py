@@ -6,7 +6,7 @@ class IoTDeviceBase(BaseModel):
     admin_id: str
 
 class IoTDeviceCreate(IoTDeviceBase):
-    pass
+    pass 
 
     class Config:
         orm_mode = True

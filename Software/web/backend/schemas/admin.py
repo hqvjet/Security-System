@@ -1,10 +1,11 @@
+from datetime import date
+from typing import List
 from pydantic import BaseModel, EmailStr
 
 class AdminBase(BaseModel):
+    id: int = None
     username: str
     email: EmailStr
-    password: str
-    confirmPassword: str
     full_name: str
     age: int
     address: str
@@ -12,14 +13,19 @@ class AdminBase(BaseModel):
     cccd: str
     agree: bool
     description: str = None
-    role: str = "admin"
+    role: str = 'admin'
     avatar: str = None
 
 class AdminCreate(AdminBase):
     password: str
+    confirmPassword: str
 
 class AdminUpdate(AdminBase):
     password: str = None
 
     class Config:
         orm_mode = True
+
+class Login(BaseModel):
+    username: str
+    password: str

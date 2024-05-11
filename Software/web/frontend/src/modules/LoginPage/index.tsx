@@ -1,55 +1,48 @@
 'use client'
 import React, { useState } from 'react';
-import { BrowserRouter as Router, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Form, Input } from 'antd';
-import { jwtDecode } from 'jwt-decode';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
 const App: React.FC = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
+      const response = await axios.post('http://localhost:8000/login', values);
+      const userData = response.data;
 
-      if (response.ok) {
-        const data = await response.json();
-        const token = data.token;
-
-        // Giải mã token
-        const decodedToken: any = jwtDecode(token);
-        const role = decodedToken.role;
-
-        // Dựa vào vai trò trong token để điều hướng người dùng
-        switch (role) {
-          case 'admin':
-            navigate('/admin');
-            break;
-          case 'police':
-            navigate('/police');
-            break;
-          case 'securitystaff':
-            navigate('/securitystaff');
-            break;
-          default:
-            navigate('/');
-        }
-      } else {
-        console.error('Login failed');
+      switch (userData.role) {
+        case 'admin':
+          router.push('/admin');
+          break;
+        case 'police':
+          router.push('/police');
+          break;
+        case 'securitystaff':
+          router.push('/securitystaff');
+          break;
+        default:
+          router.push('/register');
+          break;
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error logging in:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRegister = () => {
+    router.push('/register');
+  };
+
+  const handleForgot = () => {
+    router.push('/forgot-password');
   };
 
   return (
@@ -80,17 +73,14 @@ const App: React.FC = () => {
           <Form.Item name="remember" valuePropName="checked" noStyle>
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
-
-          <a className="login-form-forgot" href="">
-            Forgot password
-          </a>
+          <Button type="link" onClick={handleForgot}>Forgot password</Button>
         </Form.Item>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" className="login-form-button" loading={loading}>
             Log in
           </Button>
-          Or <a href="">register now!</a>
+          Or <Button type="link" onClick={handleRegister}>Register Now</Button>
         </Form.Item>
       </Form>
     </Router>

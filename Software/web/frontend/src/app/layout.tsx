@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Col className='h-screen bg-slate-300'>
+        <Col className='h-screen bg-slate-400'>
           {path[1] != 'signin' && (
             <Row align={'middle'} justify={'end'} className='w-full fixed p-5'>
               {/* <AvatarField /> */}

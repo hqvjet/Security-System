@@ -1,28 +1,65 @@
-# Logic to create a new admin user
-# You will need to implement this logic based on your requirements
-# For example:
-# - Hashing the password
-# - Generating an access key
-# - Creating a new Admin object with the provided data
-# - Adding the new Admin object to the database
-# - Returning a success message or the newly created Admin object"use client"
-import { Row, Col, Typography } from 'antd'
-import AvatarField from '@/components/AvatarField'
-import Text from 'antd/es/typography/Text'
-import Title from 'antd/es/typography/Title';
-import { useState } from 'react';
+'use client'
+import React, { useState } from 'react';
+import { Button, Row, Col, Space } from 'antd';
+import { VideoCameraOutlined, EnvironmentOutlined, CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
-export default function SecurityStaffPage() {
-    const [video, setVideo] = useState(null)
-    const [alert, setAlert] = useState(false)
+const SecurityStaffDashboard = () => {
+    const [showMap, setShowMap] = useState(false);
+
+    const handleSaveVideo = () => {
+        // Xử lý lưu video
+    };
+
+    const handleToggleBell = () => {
+        // Xử lý tắt chuông
+    };
+
+    const handleAccept = () => {
+        // Xử lý chấp nhận yêu cầu
+    };
+
+    const handleCancel = () => {
+        // Xử lý hủy bỏ yêu cầu
+    };
+
+    const toggleMap = () => {
+        setShowMap(!showMap);
+    };
 
     return (
-        <>
-            {!video ? (
-                <Title level={1}><p className='text-green-500'>NO VIOLENCE DETECTED</p></Title>
-            ) : (
-                <div>video</div>
-            )}
-        </>
-    )
-}
+        <div style={{ padding: '20px' }}>
+            <Row gutter={[16, 16]}>
+                <Col span={18}>
+                    {/* Khung video chính hoặc map */}
+                    <div style={{ border: '1px solid #ccc', width : '800px', height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {showMap ? (
+                            <div>Hiển thị map ở đây</div>
+                        ) : (
+                            <VideoCameraOutlined style={{ fontSize: '64px', color: '#ccc' }} />
+                        )}
+                    </div>
+                </Col>
+                <Col span={6}>
+                    {/* Hàng nút bên phải của khung video */}
+                    <div style={{ padding: '50px' , paddingTop: '100px'}}>
+                        <Space direction="vertical" style={{ width: '100%', paddingTop: '100px' }}>
+                            <Button type="primary" block onClick={handleSaveVideo}>Lưu video</Button>
+                            <Button type="primary" block onClick={toggleMap}>{showMap ? 'Show Video' : 'Show Map'}</Button>
+                            <Button type="primary" block onClick={handleToggleBell}>Tắt chuông</Button>
+                        </Space>
+                    </div>
+                </Col>
+            </Row>
+            <Row justify="start"  style={{ marginTop: '20px', alignItems: 'center', justifyContent: 'center'}}>
+                <Col span={10}>
+                    <Space>
+                        <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleAccept}>Accept</Button>
+                        <Button type="default" icon={<CloseCircleOutlined />} onClick={handleCancel}>Cancel</Button>
+                    </Space>
+                </Col>
+            </Row>
+        </div>
+    );
+};
+
+export default SecurityStaffDashboard;

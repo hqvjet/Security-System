@@ -1,18 +1,31 @@
 from datetime import date
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class PoliceBase(BaseModel):
-    certification: List[str]
-    work_history: List[str]
-    joined: date
-    work_at: str
+    id: str
+    username: str
+    email: EmailStr
+    password: str
+    full_name: str
+    age: int
+    address: str
+    phone: str
+    cccd: str
+    description: str = None
+    role: str
+    avatar: str = None
+    certification: str
+    work_history: str
+    joined: date = None
+    work_at: str = None
 
 class PoliceCreate(PoliceBase):
-    pass
+    password: str
 
 class PoliceUpdate(PoliceBase):
     pass
 
+class Police(PoliceBase):
     class Config:
         orm_mode = True

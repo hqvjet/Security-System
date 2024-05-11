@@ -5,8 +5,7 @@ from db import Base
 class Admin(Base):
     __tablename__ = 'admin'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    access_key = Column(String(100), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(100), nullable=False)
     password = Column(String(100), nullable=False)
     full_name = Column(String(255), nullable=False)
@@ -21,7 +20,7 @@ class Admin(Base):
 
     __mapper_args__ = {
         'polymorphic_identity': 'admin',
-        'concrete': True
+        'concrete': True 
     }
 
     def __repr__(self):

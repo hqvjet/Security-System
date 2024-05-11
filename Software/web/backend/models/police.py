@@ -1,14 +1,23 @@
-from sqlalchemy import Column, String, Date, ForeignKey
+from sqlalchemy import Column, String, Date, ARRAY, Integer, String, Text
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import ARRAY
-from models.admin import Admin
+from db import Base
 
-class Police(Admin):
+class Police(Base):
     __tablename__ = 'police'
-    __mapper_args__ = {'polymorphic_identity': 'police'}
 
-    id = Column(String(50), ForeignKey('admin.id'), primary_key=True)
-    certification = Column(ARRAY(String(255)))
-    work_history = Column(ARRAY(String(255)))
+    id = Column(String(50), primary_key=True)
+    username = Column(String(100), nullable=False)
+    password = Column(String(100), nullable=False)
+    full_name = Column(String(255), nullable=False)
+    age = Column(Integer, nullable=False)
+    email = Column(String(255), nullable=False)
+    address = Column(String(255), nullable=False)
+    phone = Column(String(20), nullable=False)
+    cccd = Column(String(20), nullable=False)
+    description = Column(Text)
+    role = Column(String(50), nullable=False)
+    certification = Column(String(255))
+    work_history = Column(String(255))
     joined = Column(Date, nullable=False)
     work_at = Column(String(255), nullable=False)
+    avatar = Column(String(255))
