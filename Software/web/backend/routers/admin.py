@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Union
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from db import SessionLocal
@@ -23,7 +24,7 @@ def get_db():
 logging.basicConfig(level=logging.INFO)
 
 @router.post("/add-staff")
-def add_staff(admin_data: PoliceCreate, db: Session = Depends(get_db)):
+def add_staff(admin_data: Union[PoliceCreate, SecurityStaffCreate], db: Session = Depends(get_db)):
     try:
         current_time = datetime.now()
         if admin_data.role == 'security':

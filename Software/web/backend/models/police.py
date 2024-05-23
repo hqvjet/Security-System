@@ -1,5 +1,4 @@
-from sqlalchemy import Column, String, Date, ARRAY, Integer, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Date, Integer, String, Text
 from db import Base
 
 class Police(Base):
@@ -16,8 +15,9 @@ class Police(Base):
     cccd = Column(String(20), nullable=False)
     description = Column(Text)
     role = Column(String(50), nullable=False)
-    certification = Column(String(255))
-    work_history = Column(String(255))
-    joined = Column(Date, nullable=False)
+    joined = Column(Date)
     work_at = Column(String(255), nullable=False)
     avatar = Column(String(255))
+
+    certification = Column(String(255))
+    work_history = Column(String(255))

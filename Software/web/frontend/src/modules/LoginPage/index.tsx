@@ -1,12 +1,11 @@
 'use client'
 import React, { useState } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
-const App: React.FC = () => {
+const LoginPage: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -46,45 +45,47 @@ const App: React.FC = () => {
   };
 
   return (
-    <Router>
-      <Form
-        name="normal_login"
-        className="login-form"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-      >
-        <Form.Item
-          name="username"
-          rules={[{ required: true, message: 'Please input your Username!' }]}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <Form
+          name="normal_login"
+          className="space-y-4"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          rules={[{ required: true, message: 'Please input your Password!' }]}
-        >
-          <Input
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Password"
-          />
-        </Form.Item>
-        <Form.Item>
-          <Form.Item name="remember" valuePropName="checked" noStyle>
-            <Checkbox>Remember me</Checkbox>
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Please input your Username!' }]}
+          >
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
           </Form.Item>
-          <Button type="link" onClick={handleForgot}>Forgot password</Button>
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button" loading={loading}>
-            Log in
-          </Button>
-          Or <Button type="link" onClick={handleRegister}>Register Now</Button>
-        </Form.Item>
-      </Form>
-    </Router>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: 'Please input your Password!' }]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              placeholder="Password"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Form.Item name="remember" valuePropName="checked" noStyle>
+              <Checkbox>Remember me</Checkbox>
+            </Form.Item>
+            <Button type="link" onClick={handleForgot}>Forgot password</Button>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="w-full" loading={loading}>
+              Log in
+            </Button>
+          </Form.Item>
+        </Form>
+        <div className="flex justify-between">
+          <Button type="link" onClick={handleRegister}>Register Now</Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default App;
+export default LoginPage;

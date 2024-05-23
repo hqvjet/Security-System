@@ -4,10 +4,11 @@ import { Col, Table, MenuProps, Button, Space } from "antd";
 import HorizontalNavigation from "@/components/HorizontalNavigation";
 import axios from 'axios';
 import MyLineChart from '@/components/Chart';
-import { FcAddDatabase, FcStatistics } from 'react-icons/fc';
+import { FcAddDatabase, FcDeleteColumn, FcDeleteDatabase, FcDeleteRow, FcEditImage, FcStatistics } from 'react-icons/fc';
 import { GiPoliceOfficerHead } from 'react-icons/gi';
 import { GoDeviceCameraVideo } from 'react-icons/go';
 import { SiSpringsecurity } from 'react-icons/si';
+import { useRouter } from 'next/navigation';
 
 const items: MenuProps['items'] = [
   {
@@ -37,6 +38,7 @@ const Admin = () => {
   const [data, setData] = useState([]);
   const [col, setCol] = useState<Array<{ title: string; dataIndex: string; key: string; }>>([]);
   const [statis, setStatis] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (current === 'security') {
@@ -55,7 +57,7 @@ const Admin = () => {
       if (response.data.length > 0) {
         const firstDataItem = response.data[0];
         const columns = Object.keys(firstDataItem).map(key => ({
-          title: key,
+          title: key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
           dataIndex: key,
           key: key,
         }));
@@ -74,19 +76,57 @@ const Admin = () => {
     setCurrent(e.key);
     setStatis(e.key === 'statistic');
   };
+  
+  const handleAddStaff = () => {
+    router.push('/admin/add-staff');
+  };
+  
+  const handleAddIotDevice = () => {
+    router.push('/admin/add-iot-device');
+  };
+
+  const handleEdit = (record: { [key: string]: any }) => {
+    const type = current;
+    router.push(`/admin/edit-staff?id=${record.id}&type=${type}`);
+  };
+
+  const handleDelete = (record: { [key: string]: any }) => {
+    const { id } = record;
+    if (confirm('Are you sure you want to delete this record?')) {
+      axios.delete(`http://localhost:8000/${current}/${id}`)
+        .then(() => {
+          setData(data.filter((item: { [key: string]: any }) => item.id !== id));
+        })
+        .catch((error: any) => {
+          console.error('Error deleting record:', error);
+        });
+    }
+  };
+  
 
   return (
-    <Col className="w-3/4">
+    <Col className="w-5/6 h-3/4">
       <Space direction="vertical" style={{ width: '100%' }}>
         <Space direction="horizontal" style={{ justifyContent: 'flex-end', marginBottom: '1rem', color: 'green', borderRadius:'10px'}}>
-          <Button icon={<FcAddDatabase />} style={{ borderColor:'blueviolet'}} type="primary">Add New Staff</Button>
-          <Button style={{marginLeft:'10px', borderColor:'blueviolet'}} type="primary">Add New Iot Device</Button>
+          <Button icon={<FcAddDatabase />} style={{ borderColor:'blueviolet'}} type="primary" onClick={handleAddStaff}>Add New Staff</Button>
+          <Button style={{marginLeft:'10px', borderColor:'blueviolet'}} type="primary" onClick={handleAddIotDevice}>Add New Iot Device</Button>
         </Space>
         <HorizontalNavigation onClick={onClick} current={current} items={items} style={{width:'2000px'}}/>
         
         {!statis ? (
           <Table
-            columns={col}
+            // columns={col}
+            columns={[...col, {
+              title: 'Actions',
+              key: 'operation',
+              render: (record) => (
+                <Space>
+                  <Button type="primary" icon={<FcEditImage/>} onClick={() => handleEdit(record)}>Edit</Button>
+                  <Button type="primary" icon={<FcDeleteRow/>} danger onClick={() => handleDelete(record)}>Delete</Button>
+                </Space>
+              ),
+            }]}
+
             dataSource={data}
             className="bg-gray-800 border border-gray-700 divide-y divide-gray-700"
             components={{

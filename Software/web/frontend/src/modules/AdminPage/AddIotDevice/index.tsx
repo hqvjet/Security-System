@@ -4,7 +4,7 @@ import { Form, Input, Button, Select } from 'antd';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-const AddStaffForm = () => {
+const AddIotDeviceForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -72,25 +72,6 @@ const AddStaffForm = () => {
           <Input.Password />
         </Form.Item>
 
-        {/* <Form.Item
-          label="Confirm Password"
-          name="confirmPassword"
-          dependencies={['password']}
-          rules={[
-            { required: true, message: 'Please confirm your password!' },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error('The two passwords that you entered do not match!'));
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item> */}
-
         <Form.Item
           label="Email"
           name="email"
@@ -149,7 +130,7 @@ const AddStaffForm = () => {
         <Form.Item
           label="Work At"
           name="work_at"
-          rules={[{ required: true, message: 'Please input Work At!' }]}
+          rules={[{ required: true, message: 'Please input work at!' }]}
         >
           <Input />
         </Form.Item>
@@ -196,4 +177,4 @@ const AddStaffForm = () => {
   );
 };
 
-export default AddStaffForm;
+export default AddIotDeviceForm;
