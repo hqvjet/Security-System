@@ -1,0 +1,64 @@
+CREATE TABLE Admin (
+    ID VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    age INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    description TEXT,
+    role VARCHAR(50) NOT NULL,
+    CCCD VARCHAR(20) NOT NULL,
+    avatar VARCHAR(255)
+);
+
+CREATE TABLE Police (
+    ID VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    age INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    description TEXT,
+    role VARCHAR(50) NOT NULL,
+    CCCD VARCHAR(20) NOT NULL,
+    avatar VARCHAR(255),
+    certification VARCHAR(255) NOT NULL,
+    work_history VARCHAR(255) NOT NULL,
+    joined DATE NOT NULL,
+    work_at VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Security_Staff (
+    ID VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    age INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    description TEXT,
+    role VARCHAR(50) NOT NULL,
+    CCCD VARCHAR(20) NOT NULL,
+    avatar VARCHAR(255),
+    joined DATE NOT NULL,
+    work_at VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IoT_Device (
+    ID VARCHAR(50) PRIMARY KEY,
+    power BOOLEAN NOT NULL,
+    geolocation POINT NOT NULL,
+    admin_id VARCHAR(50) REFERENCES Admin(ID)
+);
+
+CREATE TABLE Video (
+    ID VARCHAR(50) PRIMARY KEY,
+    created_at DATE NOT NULL,
+    security_staff_id INTEGER REFERENCES Security_Staff(ID)
+);
+
