@@ -8,7 +8,10 @@ from passlib.hash import bcrypt
 from passlib.context import CryptContext
 import logging
 
-router = APIRouter(tags=['Authentication'])
+router = APIRouter(
+    prefix='/api/v1/authen',
+    tags=['Authentication']
+)
 
 def get_db():
     db = SessionLocal()

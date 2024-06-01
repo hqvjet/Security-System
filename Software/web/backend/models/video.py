@@ -7,4 +7,4 @@ class Video(Base):
 
     id = Column(String(50), primary_key=True)
     created_at = Column(Date, nullable=False)
-    security_staff_id = Column(String(50), ForeignKey('security_staff.id'))
+    iot_id = Column(String(50), ForeignKey('iot_device.id'))

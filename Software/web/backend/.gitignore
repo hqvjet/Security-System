@@ -2,4 +2,3 @@ venv
 models/__pycache__
 routes/__pycache__
 __pycache__
-.env

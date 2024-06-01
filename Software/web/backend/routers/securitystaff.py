@@ -6,7 +6,10 @@ from db import SessionLocal
 from models.securitystaff import SecurityStaff
 from schemas.securitystaff import SecurityStaffCreate, SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
 
-router = APIRouter(tags=['Security Staff'])
+router = APIRouter(
+    prefix='/api/v1/security_staff',
+    tags=['Security Staff']
+)
 
 def get_db():
     db = SessionLocal()

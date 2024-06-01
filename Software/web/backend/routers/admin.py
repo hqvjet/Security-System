@@ -12,7 +12,10 @@ from schemas.admin import AdminCreate
 from passlib.hash import bcrypt
 import logging
 
-router = APIRouter()
+router = APIRouter(
+    prefix='/api/v1/admin',
+    tags=['ADMIN']
+)
 
 def get_db():
     db = SessionLocal()

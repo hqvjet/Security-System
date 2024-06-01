@@ -5,7 +5,10 @@ from db import SessionLocal
 from models.police import Police
 from schemas.police import PoliceCreate, Police as PoliceSchema, PoliceUpdate
 
-router = APIRouter(tags=['Police'])
+router = APIRouter(
+    prefix='/api/v1/police',
+    tags=['Police']
+)
 
 def get_db():
     db = SessionLocal()
