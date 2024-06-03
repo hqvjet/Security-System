@@ -1,28 +1,31 @@
 'use client'
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox, message } from 'antd';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { usingAuthenticationAPI } from '@/apis/authentication.ts'
 
 const RegisterForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
 
-  const onFinish = async (values: { [key: string]: any; }) => {
-    try {
+  const onFinish = (values: { [key: string]: any; }) => {
       setLoading(true);
-      setMessage('User registered successfully: ' + JSON.stringify(values));
-      const response = await axios.post('http://localhost:8000/register-admin', values);
-      console.log('User registered successfully:', response.data);
+      console.log(1)
+      usingAuthenticationAPI.register_admin(values)
+        .then((res: any) => {
+            message.success('Registered successfully!')
+            console.log('User registered successfully:', response.data);
+        })
+        .catch((err: any) => {
+            message.error('Oopps!, There are some errors !')
+        })
+        .finally(() => {
+            setLoading(false)
+        })
       
-      setLoading(false);
-      router.push('/login');
-    } catch (error) {
-      console.error('Error registering user:', error);
-      setLoading(false);
-    }
-  };
+      // router.push('/login');
+  }
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
@@ -32,7 +35,6 @@ const RegisterForm = () => {
   };
   return (
     <div>
-      {message && <p className='text-gray-50'>{message}</p>}
       <Form
         name="register"
         labelCol={{ span: 8 }}

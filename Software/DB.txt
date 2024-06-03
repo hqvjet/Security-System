@@ -59,6 +59,6 @@ CREATE TABLE IoT_Device (
 CREATE TABLE Video (
     ID VARCHAR(50) PRIMARY KEY,
     created_at DATE NOT NULL,
-    security_staff_id INTEGER REFERENCES Security_Staff(ID)
+    iot_id VARCHAR(50) REFERENCES IoT_Device(ID)
 );
 
