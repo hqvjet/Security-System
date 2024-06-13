@@ -11,7 +11,7 @@ const AddIotDeviceForm = () => {
   const onFinish = async (values: { [key: string]: any; }) => {
     try {
       setLoading(true);
-      const response = await usingIotDeviceAPI.addDevice(values);
+      const response = await usingIotDeviceAPI.create(values);
       message.success('IoT Device added successfully!');
       console.log('IoT Device added successfully:', response.data);
       setLoading(false);

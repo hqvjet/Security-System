@@ -11,7 +11,10 @@ class IoTDeviceBase(BaseModel):
     admin_id: str
 
 class IoTDeviceCreate(IoTDeviceBase):
-    pass
+    id: str
+    power: bool
+    geolocation: Point
+    admin_id: str
 
 class IoTDevice(IoTDeviceBase):
     class Config:
