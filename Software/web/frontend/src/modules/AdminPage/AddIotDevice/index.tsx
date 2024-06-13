@@ -9,18 +9,17 @@ const AddIotDeviceForm = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [form] = Form.useForm();
-  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
   const onFinish = async (values: { [key: string]: any; }) => {
     try {
       setLoading(true);
-      setMessage('Staff added successfully: ' + JSON.stringify(values));
-      const response = await axios.post('http://localhost:8000/add-staff', values);
-      console.log('Staff added successfully:', response.data);
+      setMessage('IoT Device added successfully: ' + JSON.stringify(values));
+      const response = await axios.post('http://localhost:8000/api/v1/iot_device/add_device', values);
+      console.log('IoT Device added successfully:', response.data);
       setLoading(false);
       router.push('/admin');
     } catch (error) {
-      console.error('Error adding staff:', error);
+      console.error('Error adding IoT Device:', error);
       setLoading(false);
     }
   };
@@ -31,19 +30,14 @@ const AddIotDeviceForm = () => {
   
   const { Option } = Select;
 
-  const handleRoleChange = (value: string) => {
-    setShowAdditionalFields(value === 'police');
-  };
-
   return (
     <div>
       {message && <p className='text-gray-50'>{message}</p>}
       <Form
-        name="addStaff"
+        name="addIotDevice"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
-        initialValues={{ role: 'security' }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
@@ -57,119 +51,45 @@ const AddIotDeviceForm = () => {
         </Form.Item>
 
         <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input username!' }]}
+          label="Power"
+          name="power"
+          rules={[{ required: true, message: 'Please input power status!' }]}
         >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[{ required: true, type: 'email', message: 'Please input email!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Full Name"
-          name="full_name"
-          rules={[{ required: true, message: 'Please input full name!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Age"
-          name="age"
-          rules={[{ required: true, message: 'Please input age!' }]}
-        >
-          <Input type="number" />
-        </Form.Item>
-
-        <Form.Item
-          label="Address"
-          name="address"
-          rules={[{ required: true, message: 'Please input address!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Phone"
-          name="phone"
-          rules={[{ required: true, message: 'Please input phone number!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="CCCD"
-          name="cccd"
-          rules={[{ required: true, message: 'Please input CCCD!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Description"
-          name="description"
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Work At"
-          name="work_at"
-          rules={[{ required: true, message: 'Please input work at!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Role"
-          name="role"
-          rules={[{ required: true, message: 'Please select a role!' }]}
-        >
-          <Select onChange={handleRoleChange}>
-          <Option value="security">Security</Option>
-            <Option value="police">Police</Option>
+          <Select>
+            <Option value={true}>On</Option>
+            <Option value={false}>Off</Option>
           </Select>
         </Form.Item>
 
-        {showAdditionalFields && (
-          <>
-            <Form.Item
-              label="Certification"
-              name="certification"
-              rules={[{ required: true, message: 'Please input certification!' }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Work History"
-              name="work_history"
-              rules={[{ required: true, message: 'Please input work history!' }]}
-            >
-              <Input />
-            </Form.Item>
-          </>
-        )}
+        <Form.Item
+          label="Latitude"
+          name="latitude"
+          rules={[{ required: true, message: 'Please input latitude!' }]}
+        >
+          <Input type="number" step="any" />
+        </Form.Item>
+
+        <Form.Item
+          label="Longitude"
+          name="longitude"
+          rules={[{ required: true, message: 'Please input longitude!' }]}
+        >
+          <Input type="number" step="any" />
+        </Form.Item>
+
+        <Form.Item
+          label="Admin ID"
+          name="admin_id"
+          rules={[{ required: true, message: 'Please input Admin ID!' }]}
+        >
+          <Input />
+        </Form.Item>
 
         <Form.Item
           wrapperCol={{ offset: 8, span: 16 }}
         >
           <Button type="primary" htmlType="submit" loading={loading}>
-            Add Staff
+            Add IoT Device
           </Button>
         </Form.Item>
       </Form>

@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/login', values);
+      const response = await axios.post('http://localhost:8000/api/v1/authentication/login', values);
       const userData = response.data;
 
       switch (userData.role) {

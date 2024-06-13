@@ -24,7 +24,7 @@ const EditStaff = () => {
 
   const fetchStaffData = async (staffId: string, staffType: string) => {
     try {
-      const response = await axios.get(`http://localhost:8000/${staffType}/${staffId}`);
+      const response = await axios.get(`http://localhost:8000/api/v1/${staffType}/get/${staffId}`);
       const dataWithRole = { ...response.data, role: staffType };
       setStaffData(dataWithRole);
 
@@ -42,7 +42,7 @@ const EditStaff = () => {
   const handleSave = async (values: any) => {
     setLoading(true);
     try {
-      await axios.put(`http://localhost:8000/${type}/${id}`, values);
+      await axios.put(`http://localhost:8000/api/v1/${type}/update/${id}`, values);
       router.push('/admin'); 
     } catch (error) {
       console.error('Error saving staff data:', error);

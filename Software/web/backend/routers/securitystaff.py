@@ -7,7 +7,7 @@ from models.securitystaff import SecurityStaff
 from schemas.securitystaff import SecurityStaffCreate, SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
 
 router = APIRouter(
-    prefix='/api/v1/security_staff',
+    prefix='/api/v1/security',
     tags=['Security Staff']
 )
 
@@ -18,12 +18,12 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/list_security-staff", response_model=List[SecurityStaffSchema])
+@router.get("/get_list", response_model=List[SecurityStaffSchema])
 def get_security_staff_list(db: Session = Depends(get_db)):
     security_staff_list = db.query(SecurityStaff).filter(SecurityStaff.role == 'security').all()
     return security_staff_list
 
-@router.post("/security_staff", response_model=SecurityStaffSchema)
+@router.post("/create", response_model=SecurityStaffSchema)
 def create_security_staff(security_staff_data: SecurityStaffCreate, db: Session = Depends(get_db)):
     try:
         db_security_staff = SecurityStaff(**security_staff_data.dict())
@@ -34,7 +34,7 @@ def create_security_staff(security_staff_data: SecurityStaffCreate, db: Session 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.delete("/security/{security_id}")
+@router.delete("/delete/{security_id}")
 def delete_security(security_id: str, db: Session = Depends(get_db)):
     security = db.query(SecurityStaff).filter(SecurityStaff.id == security_id).first()
     if security:
@@ -44,14 +44,14 @@ def delete_security(security_id: str, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail="Police not found")
     
-@router.get("/security/{security_id}")
+@router.get("/get/{security_id}")
 def get_security(security_id: str, db: Session = Depends(get_db)):
     security_staff = db.query(SecurityStaff).filter(SecurityStaff.id == security_id).first()
     if not security_staff:
         raise HTTPException(status_code=404, detail="Security staff not found")
     return security_staff
 
-@router.put("/security/{security_id}", response_model=SecurityStaffSchema)
+@router.put("/update/{security_id}", response_model=SecurityStaffSchema)
 def update_security(security_id: str, security_staff_data: SecurityStaffUpdate, db: Session = Depends(get_db)):
     security_staff = db.query(SecurityStaff).filter(SecurityStaff.id == security_id).first()
     if not security_staff:

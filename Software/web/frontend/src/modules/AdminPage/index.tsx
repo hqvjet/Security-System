@@ -45,14 +45,14 @@ const Admin = () => {
       fetchSecurityStaffData();
     } else if (current === 'police') {
       fetchPoliceData();
-    } else if (current === 'iot') {
+    } else if (current === 'iot_device') {
       fetchIoTDeviceData();
     }
   }, [current]);
   
   const fetchData = async (dataType: string) => {
     try {
-      const response = await axios.get(`http://localhost:8000/${dataType}`);
+      const response = await axios.get(`http://localhost:8000/api/v1/${current}/${dataType}`);
       setData(response.data);
       if (response.data.length > 0) {
         const firstDataItem = response.data[0];
@@ -68,9 +68,9 @@ const Admin = () => {
     }
   };
   
-  const fetchSecurityStaffData = () => fetchData('list_security-staff');
-  const fetchPoliceData = () => fetchData('list_police');
-  const fetchIoTDeviceData = () => fetchData('iot');
+  const fetchSecurityStaffData = () => fetchData('get_list');
+  const fetchPoliceData = () => fetchData('get_list');
+  const fetchIoTDeviceData = () => fetchData('get_list');
   
   const onClick = (e: { key: React.SetStateAction<string>; }) => {
     setCurrent(e.key);
@@ -93,7 +93,7 @@ const Admin = () => {
   const handleDelete = (record: { [key: string]: any }) => {
     const { id } = record;
     if (confirm('Are you sure you want to delete this record?')) {
-      axios.delete(`http://localhost:8000/${current}/${id}`)
+      axios.delete(`http://localhost:8000/api/v1/${current}/delete/${id}`)
         .then(() => {
           setData(data.filter((item: { [key: string]: any }) => item.id !== id));
         })

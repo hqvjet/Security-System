@@ -15,7 +15,7 @@ const AddStaffForm = () => {
     try {
       setLoading(true);
       setMessage('Staff added successfully: ' + JSON.stringify(values));
-      const response = await axios.post('http://localhost:8000/add-staff', values);
+      const response = await axios.post('http://localhost:8000/api/v1/admin/add-staff', values);
       console.log('Staff added successfully:', response.data);
       setLoading(false);
       router.push('/admin');

@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 import logging
 
 router = APIRouter(
-    prefix='/api/v1/authen',
+    prefix='/api/v1/authentication',
     tags=['Authentication']
 )
 

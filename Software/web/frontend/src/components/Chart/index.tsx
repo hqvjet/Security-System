@@ -23,7 +23,7 @@ ChartJS.register(
 
 const options: ChartOptions = {
     scales: {
-        yAxes: [
+        y: [
             {
                 ticks: {
                     beginAtZero: true,
@@ -31,7 +31,7 @@ const options: ChartOptions = {
                 },
             },
         ],
-        xAxes: [
+        x: [
             {
                 ticks: {
                     beginAtZero: true,
