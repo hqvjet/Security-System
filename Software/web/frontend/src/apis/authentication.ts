@@ -1,9 +1,9 @@
-import axios from 'axios';
+import { AUTHEN_API } from './index';
 
-export const AUTHEN_API = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL + '/authentication',
-    timeout: 10000
-});
+// export const AUTHEN_API = axios.create({
+//     baseURL: process.env.NEXT_PUBLIC_API_URL + '/authentication',
+//     timeout: 10000
+// });
 
 export const usingAuthenticationAPI = {
     registerAdmin: (values: { [key: string]: any }) => {

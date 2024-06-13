@@ -1,9 +1,10 @@
 import axios from 'axios'
 
-// export * from './admin';
-// export * from './authentication';
-// export * from './police';
-// export * from './security_staff';
+export * from './admin';
+export * from './authentication';
+export * from './police';
+export * from './security_staff';
+export * from './iot_device';
 
 
 export const POLICE_API = axios.create({
@@ -30,3 +31,4 @@ export const AUTHEN_API = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL + '/authentication',
     timeout: 10000
 })
+

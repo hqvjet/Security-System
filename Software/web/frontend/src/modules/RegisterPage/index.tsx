@@ -1,9 +1,8 @@
 'use client'
 import React, { useState } from 'react';
 import { Form, Input, Button, Checkbox, message } from 'antd';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { usingAuthenticationAPI } from '@/apis/authentication.ts'
+import { usingAuthenticationAPI } from '@/apis/authentication'
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -11,11 +10,12 @@ const RegisterForm = () => {
 
   const onFinish = (values: { [key: string]: any; }) => {
       setLoading(true);
-      console.log(1)
-      usingAuthenticationAPI.register_admin(values)
-        .then((res: any) => {
+      console.log(1)  
+      usingAuthenticationAPI.registerAdmin(values)
+        .then((response: any) => {
             message.success('Registered successfully!')
             console.log('User registered successfully:', response.data);
+            router.push('/login');
         })
         .catch((err: any) => {
             message.error('Oopps!, There are some errors !')
@@ -23,8 +23,6 @@ const RegisterForm = () => {
         .finally(() => {
             setLoading(false)
         })
-      
-      // router.push('/login');
   }
 
   const onFinishFailed = (errorInfo: any) => {

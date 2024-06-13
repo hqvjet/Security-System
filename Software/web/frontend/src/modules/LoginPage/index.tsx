@@ -1,9 +1,9 @@
 'use client'
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import { usingAuthenticationAPI } from '@/apis/authentication';
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
@@ -12,25 +12,30 @@ const LoginPage: React.FC = () => {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/authentication/login', values);
+      const response = await usingAuthenticationAPI.login(values);
       const userData = response.data;
 
-      switch (userData.role) {
-        case 'admin':
-          router.push('/admin');
-          break;
-        case 'police':
-          router.push('/police');
-          break;
-        case 'securitystaff':
-          router.push('/securitystaff');
-          break;
-        default:
-          router.push('/register');
-          break;
+      if (userData) {
+        message.success('Login successful!');
+
+        switch (userData.role) {
+          case 'admin':
+            router.push('/admin');
+            break;
+          case 'police':
+            router.push('/police');
+            break;
+          case 'securitystaff':
+            router.push('/securitystaff');
+            break;
+          default:
+            router.push('/register');
+            break;
+        }
       }
     } catch (error) {
       console.error('Error logging in:', error);
+      message.error('Login failed. Please check your username and password.');
     } finally {
       setLoading(false);
     }

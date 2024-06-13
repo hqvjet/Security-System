@@ -1,49 +1,74 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { usingPoliceAPI } from '@/apis/police';
+import { usingSecurityStaffAPI } from '@/apis/security_staff';
 
 const { Option } = Select;
 
 const EditStaff = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  const type = searchParams.get('type'); // Lấy loại nhân viên từ URL
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [staffData, setStaffData] = useState(null);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
   useEffect(() => {
-    if (id && type) {
-      fetchStaffData(id, type);
-    }
-  }, [id, type]);
-
-  const fetchStaffData = async (staffId: string, staffType: string) => {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/v1/${staffType}/get/${staffId}`);
-      const dataWithRole = { ...response.data, role: staffType };
-      setStaffData(dataWithRole);
-
-      if (staffType === 'police') {
-        setShowAdditionalFields(true);
-      } else {
-        setShowAdditionalFields(false);
+    const fetchData = async () => {
+      const id = searchParams.get('id');
+      const type = searchParams.get('type');
+      if (id && type) {
+        try {
+          let api;
+          switch (type) {
+            case 'security':
+              api = usingSecurityStaffAPI;
+              break;
+            case 'police':
+              api = usingPoliceAPI;
+              break;
+            default:
+              return;
+          }
+          const response = await api.get(id);
+          const dataWithRole = { ...response.data, role: type };
+          setStaffData(dataWithRole);
+          setShowAdditionalFields(type === 'police');
+          form.setFieldsValue(dataWithRole);
+        } catch (error) {
+          console.error('Error fetching staff data:', error);
+        }
       }
-      form.setFieldsValue(dataWithRole);
-    } catch (error) {
-      console.error('Error fetching staff data:', error);
-    }
-  };
+    };
+    fetchData();
+  }, [searchParams]);
 
   const handleSave = async (values: any) => {
     setLoading(true);
     try {
-      await axios.put(`http://localhost:8000/api/v1/${type}/update/${id}`, values);
-      router.push('/admin'); 
+      const id = searchParams.get('id');
+      const type = searchParams.get('type');
+      if (!id || !type) {
+        console.error('Invalid id or type');
+        return;
+      }
+
+      let api;
+      switch (type) {
+        case 'security':
+          api = usingSecurityStaffAPI;
+          break;
+        case 'police':
+          api = usingPoliceAPI;
+          break;
+        default:
+          return;
+      }
+
+      await api.update(id, values);
+      router.push('/admin');
     } catch (error) {
       console.error('Error saving staff data:', error);
     } finally {

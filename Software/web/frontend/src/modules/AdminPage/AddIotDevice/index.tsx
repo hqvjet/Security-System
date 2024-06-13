@@ -1,28 +1,28 @@
 'use client'
 import React, { useState } from 'react';
-import { Form, Input, Button, Select } from 'antd';
-import axios from 'axios';
+import { Form, Input, Button, Select, message } from 'antd';
+import { usingIotDeviceAPI } from '@/apis/iot_device';
 import { useRouter } from 'next/navigation';
 
 const AddIotDeviceForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [form] = Form.useForm();
 
   const onFinish = async (values: { [key: string]: any; }) => {
     try {
       setLoading(true);
-      setMessage('IoT Device added successfully: ' + JSON.stringify(values));
-      const response = await axios.post('http://localhost:8000/api/v1/iot_device/add_device', values);
+      const response = await usingIotDeviceAPI.addDevice(values);
+      message.success('IoT Device added successfully!');
       console.log('IoT Device added successfully:', response.data);
       setLoading(false);
       router.push('/admin');
     } catch (error) {
       console.error('Error adding IoT Device:', error);
+      message.error('Failed to add IoT Device');
       setLoading(false);
     }
   };
+
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
@@ -32,7 +32,6 @@ const AddIotDeviceForm = () => {
 
   return (
     <div>
-      {message && <p className='text-gray-50'>{message}</p>}
       <Form
         name="addIotDevice"
         labelCol={{ span: 8 }}

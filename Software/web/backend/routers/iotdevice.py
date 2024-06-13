@@ -6,7 +6,7 @@ from models.iotdevice import IoTDevice
 from schemas.iotdevice import IoTDeviceCreate, IoTDevice as IoTDeviceSchema
 
 router = APIRouter(
-    prefix='/api/v1/iot_device',
+    prefix='/api/v1/iot',
     tags=['IoT Device']
 )
 

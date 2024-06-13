@@ -1,26 +1,25 @@
 'use client'
 import React, { useState } from 'react';
-import { Form, Input, Button, Select } from 'antd';
-import axios from 'axios';
+import { Form, Input, Button, Select, message } from 'antd';
+import { usingAdminAPI } from '@/apis/admin'
 import { useRouter } from 'next/navigation';
 
 const AddStaffForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [form] = Form.useForm();
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
   const onFinish = async (values: { [key: string]: any; }) => {
     try {
       setLoading(true);
-      setMessage('Staff added successfully: ' + JSON.stringify(values));
-      const response = await axios.post('http://localhost:8000/api/v1/admin/add-staff', values);
+      const response = await usingAdminAPI.addStaff(values);
+      message.success('Staff added successfully!');
       console.log('Staff added successfully:', response.data);
       setLoading(false);
       router.push('/admin');
     } catch (error) {
       console.error('Error adding staff:', error);
+      message.error('Failed to add staff');
       setLoading(false);
     }
   };
@@ -37,7 +36,6 @@ const AddStaffForm = () => {
 
   return (
     <div>
-      {message && <p className='text-gray-50'>{message}</p>}
       <Form
         name="addStaff"
         labelCol={{ span: 8 }}

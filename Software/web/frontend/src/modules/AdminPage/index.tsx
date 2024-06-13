@@ -45,7 +45,7 @@ const Admin = () => {
       fetchSecurityStaffData();
     } else if (current === 'police') {
       fetchPoliceData();
-    } else if (current === 'iot_device') {
+    } else if (current === 'iot') {
       fetchIoTDeviceData();
     }
   }, [current]);
