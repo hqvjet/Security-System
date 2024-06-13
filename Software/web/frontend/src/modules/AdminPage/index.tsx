@@ -10,27 +10,13 @@ import { GoDeviceCameraVideo } from 'react-icons/go';
 import { SiSpringsecurity } from 'react-icons/si';
 import { useRouter } from 'next/navigation';
 
-const items: MenuProps['items'] = [
-  {
-    label: 'Police',
-    key: 'police',
-    icon: <GiPoliceOfficerHead />,
-  },
-  {
-    label: 'Security Staff',
-    key: 'security',
-    icon: <SiSpringsecurity />,
-  },
-  {
-    label: 'IoT Device',
-    key: 'iot',
-    icon: <GoDeviceCameraVideo />,
-  },
-  {
-    label: 'Statistic',
-    key: 'statistic',
-    icon: <FcStatistics />,
-  },
+import { usingPoliceAPI, usingSecurityStaffAPI, usingIotDeviceAPI } from '@/apis';
+
+const items = [
+  { label: 'Police', key: 'police', icon: <GiPoliceOfficerHead /> },
+  { label: 'Security Staff', key: 'security', icon: <SiSpringsecurity /> },
+  { label: 'IoT Device', key: 'iot', icon: <GoDeviceCameraVideo /> },
+  { label: 'Statistic',  key: 'statistic', icon: <FcStatistics />, },
 ];
 
 const Admin = () => {
@@ -41,18 +27,26 @@ const Admin = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (current === 'security') {
-      fetchSecurityStaffData();
-    } else if (current === 'police') {
-      fetchPoliceData();
-    } else if (current === 'iot') {
-      fetchIoTDeviceData();
-    }
+    fetchData();
   }, [current]);
-  
-  const fetchData = async (dataType: string) => {
+
+  const fetchData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/v1/${current}/${dataType}`);
+      let api;
+      switch (current) {
+        case 'security':
+          api = usingSecurityStaffAPI;
+          break;
+        case 'police':
+          api = usingPoliceAPI;
+          break;
+        case 'iot':
+          api = usingIotDeviceAPI;
+          break;
+        default:
+          return;
+      }
+      const response = await api.getList();
       setData(response.data);
       if (response.data.length > 0) {
         const firstDataItem = response.data[0];
@@ -67,10 +61,6 @@ const Admin = () => {
       console.error('Error fetching data:', error);
     }
   };
-  
-  const fetchSecurityStaffData = () => fetchData('get_list');
-  const fetchPoliceData = () => fetchData('get_list');
-  const fetchIoTDeviceData = () => fetchData('get_list');
   
   const onClick = (e: { key: React.SetStateAction<string>; }) => {
     setCurrent(e.key);
@@ -93,7 +83,23 @@ const Admin = () => {
   const handleDelete = (record: { [key: string]: any }) => {
     const { id } = record;
     if (confirm('Are you sure you want to delete this record?')) {
-      axios.delete(`http://localhost:8000/api/v1/${current}/delete/${id}`)
+      let api;
+      switch (current) {
+        case 'security':
+          api = usingSecurityStaffAPI;
+          break;
+        case 'police':
+          api = usingPoliceAPI;
+          break;
+        case 'iot':
+          api = usingIotDeviceAPI;
+          break;
+        default:
+          console.error('Invalid current type:', current);
+          return;
+      }
+  
+      api.delete(id)
         .then(() => {
           setData(data.filter((item: { [key: string]: any }) => item.id !== id));
         })
@@ -168,3 +174,7 @@ const Admin = () => {
 }
 
 export default Admin;
+
+function setColumns(arg0: ({ title: string; dataIndex: string; key: string; } | { title: string; key: string; render: (record: any) => React.JSX.Element; })[]) {
+  throw new Error('Function not implemented.');
+}

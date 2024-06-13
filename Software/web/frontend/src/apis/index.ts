@@ -23,7 +23,7 @@ export const ADMIN_API = axios.create({
 })
 
 export const IOT_API = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL + '/iot_device',
+    baseURL: process.env.NEXT_PUBLIC_API_URL + '/iot',
     timeout: 10000
 })
 
