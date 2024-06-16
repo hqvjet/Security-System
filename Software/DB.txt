@@ -52,7 +52,7 @@ CREATE TABLE Security_Staff (
 CREATE TABLE IoT_Device (
     ID VARCHAR(50) PRIMARY KEY,
     power BOOLEAN NOT NULL,
-    geolocation POINT NOT NULL,
+    geolocation VARCHAR(50) NOT NULL,
     admin_id VARCHAR(50) REFERENCES Admin(ID)
 );
 
