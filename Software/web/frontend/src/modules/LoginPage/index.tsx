@@ -18,6 +18,9 @@ const LoginPage: React.FC = () => {
       if (userData) {
         message.success('Login successful!');
 
+        localStorage.setItem('username', userData.username);
+        console.log('Username:', userData.username);
+        
         switch (userData.role) {
           case 'admin':
             router.push('/admin');

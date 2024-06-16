@@ -3,7 +3,6 @@ from typing import List
 from pydantic import BaseModel, EmailStr
 
 class AdminBase(BaseModel):
-    id: int = None
     username: str
     email: EmailStr
     full_name: str
@@ -23,9 +22,11 @@ class AdminCreate(AdminBase):
 class AdminUpdate(AdminBase):
     password: str = None
 
-    class Config:
-        orm_mode = True
-
 class Login(BaseModel):
     username: str
     password: str
+
+class AdminSchema(AdminBase):
+
+    class Config:
+        orm_mode = True

@@ -1,36 +1,50 @@
 'use client'
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox, message } from 'antd';
 import { useRouter } from 'next/navigation';
-import { usingAuthenticationAPI } from '@/apis/authentication'
+import { Button, Checkbox, Form, Input, message } from 'antd';
+import { AlignCenterOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
+import { usingAuthenticationAPI } from '@/apis/authentication';
 
-const RegisterForm = () => {
+interface RegisterFormValues {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  email: string;
+  full_name: string;
+  age: number;
+  address: string;
+  phone: string;
+  cccd: string;
+  agree: boolean;
+}
+
+const RegisterForm: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const onFinish = (values: { [key: string]: any; }) => {
-      setLoading(true);
-      console.log(1)  
-      usingAuthenticationAPI.registerAdmin(values)
-        .then((response: any) => {
-            message.success('Registered successfully!')
-            console.log('User registered successfully:', response.data);
-            router.push('/login');
-        })
-        .catch((err: any) => {
-            message.error('Oopps!, There are some errors !')
-        })
-        .finally(() => {
-            setLoading(false)
-        })
-  }
+  const onFinish = async (values: RegisterFormValues) => {
+    setLoading(true);
+    try {
+      const response = await usingAuthenticationAPI.registerAdmin(values);
+      message.success('Registered successfully!');
+      console.log('User registered successfully:', response.data);
+      router.push('/login');
+    } catch (error) {
+      console.error('Error registering:', error);
+      message.error('Registration failed. Please check your input and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
+
   const handleLogin = () => {
     router.push('/login');
   };
+
   return (
     <div>
       <Form
@@ -48,7 +62,7 @@ const RegisterForm = () => {
           name="username"
           rules={[{ required: true, message: 'Please input your username!' }]}
         >
-          <Input />
+          <Input prefix={<UserOutlined />} />
         </Form.Item>
 
         <Form.Item
@@ -56,7 +70,7 @@ const RegisterForm = () => {
           name="password"
           rules={[{ required: true, message: 'Please input your password!' }]}
         >
-          <Input.Password />
+          <Input.Password prefix={<LockOutlined />} />
         </Form.Item>
 
         <Form.Item
@@ -75,7 +89,7 @@ const RegisterForm = () => {
             }),
           ]}
         >
-          <Input.Password />
+          <Input.Password prefix={<LockOutlined />} />
         </Form.Item>
 
         <Form.Item
@@ -130,19 +144,20 @@ const RegisterForm = () => {
           name="agree"
           valuePropName="checked"
           wrapperCol={{ offset: 8, span: 16 }}
-          rules={[{ required: true, message: 'Please agree to terms and conditions!' }]}
+          rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Please agree to terms and conditions!') }]}
         >
           <Checkbox>I agree to the terms and conditions</Checkbox>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit" loading={loading}>
+        <Form.Item wrapperCol={{ offset: 12, span: 16 }}>
+          <Button style = {{background:"#1944BA"}} type="primary" htmlType="submit" loading={loading}>
             Register
           </Button>
         </Form.Item>
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        Already have an account? <Button type="link" onClick={handleLogin}>Login</Button>
-      </div>
+
+        <div style={{ textAlign: 'center', marginTop: '20px', marginLeft:'100px' }}>
+          Already have an account? <Button type="link" onClick={handleLogin}>Login</Button>
+        </div>
       </Form>
     </div>
   );

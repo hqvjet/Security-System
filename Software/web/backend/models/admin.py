@@ -1,11 +1,13 @@
 from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from db import Base
+import uuid
 
 class Admin(Base):
     __tablename__ = 'admin'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = Column(String(100), nullable=False)
     password = Column(String(100), nullable=False)
     full_name = Column(String(255), nullable=False)

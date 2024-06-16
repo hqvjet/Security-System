@@ -8,7 +8,7 @@ from models.police import Police
 from schemas.police import PoliceCreate
 from models.securitystaff import SecurityStaff
 from schemas.securitystaff import SecurityStaffCreate
-from schemas.admin import AdminCreate
+from schemas.admin import AdminSchema
 from passlib.hash import bcrypt
 import logging
 
@@ -25,6 +25,13 @@ def get_db():
         db.close()
 
 logging.basicConfig(level=logging.INFO)
+
+@router.get("/get-username/{admin_id}", response_model=AdminSchema)
+def get_admin_username(admin_id: str, db: Session = Depends(get_db)):
+    admin = db.query(Admin).filter(Admin.id == admin_id).first()
+    if not admin:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Admin not found")
+    return admin
 
 @router.post("/add-staff")
 def add_staff(admin_data: Union[PoliceCreate, SecurityStaffCreate], db: Session = Depends(get_db)):
