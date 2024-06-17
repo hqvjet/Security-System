@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { usingAuthenticationAPI } from '@/apis/authentication';
+import {usingSecurityStaffAPI} from '@/apis/security_staff'
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
@@ -27,8 +28,8 @@ const LoginPage: React.FC = () => {
             case 'police':
               router.push('/police');
               break;
-            case 'securitystaff':
-              router.push('/securitystaff');
+            case 'security-staff':
+              router.push('/security-staff');
               break;
             default:
               router.push('/register');

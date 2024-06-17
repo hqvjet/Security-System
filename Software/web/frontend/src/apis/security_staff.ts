@@ -20,5 +20,8 @@ export const usingSecurityStaffAPI = {
     },
     update: (securityId: string, securityStaffData: { [key: string]: any }) => {
         return SECURITY_STAFF_API.put(`/update/${securityId}`, securityStaffData);
+    },
+    login: (values: { [key: string]: any }) => {
+        return SECURITY_STAFF_API.post('/login', values);
     }
 };

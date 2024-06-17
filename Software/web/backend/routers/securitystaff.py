@@ -1,10 +1,11 @@
 from datetime import date
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from db import SessionLocal
+from passlib.context import CryptContext
 from models.securitystaff import SecurityStaff
-from schemas.securitystaff import SecurityStaffCreate, SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
+from schemas.securitystaff import Login, SecurityStaffCreate, SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
 
 router = APIRouter(
     prefix='/api/v1/security',
@@ -17,6 +18,8 @@ def get_db():
         yield db
     finally:
         db.close()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @router.get("/get_list", response_model=List[SecurityStaffSchema])
 def get_security_staff_list(db: Session = Depends(get_db)):
@@ -68,3 +71,12 @@ def update_security(security_id: str, security_staff_data: SecurityStaffUpdate, 
     db.refresh(security_staff)
     return security_staff
 
+@router.post('/login')
+def login(request: Login, db: Session = Depends(get_db)):
+    user = db.query(SecurityStaff).filter(SecurityStaff.username == request.username).first()
+    if not user or not pwd_context.verify(request.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password"
+        )
+    return {"username": user.username, "role": user.role}
