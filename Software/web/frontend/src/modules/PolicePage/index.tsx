@@ -33,7 +33,6 @@ const PoliceDashboard = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      {/* Thông báo */}
       {hasTask && (
         <Row justify="center" style={{ marginBottom: '20px' }}>
           <Col>
@@ -43,7 +42,6 @@ const PoliceDashboard = () => {
         </Row>
       )}
 
-      {/* Nút chuyển đổi trạng thái */}
       <Row justify="center" style={{ marginBottom: '20px' }}>
         <Col>
           {!hasTask ? (
@@ -54,7 +52,6 @@ const PoliceDashboard = () => {
         </Col>
       </Row>
 
-      {/* Khung bản đồ */}
       {hasTask && (
         <Row justify="center" style={{ border: '1px solid #ccc', padding: '20px' }}>
           <Col>
@@ -67,7 +64,6 @@ const PoliceDashboard = () => {
         </Row>
       )}
 
-      {/* Thông báo khi hoàn thành nhiệm vụ */}
       {taskCompleted && (
         <Row justify="center" style={{ marginTop: '20px' }}>
           <Col>
