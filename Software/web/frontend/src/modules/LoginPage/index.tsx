@@ -8,6 +8,7 @@ import { usingAuthenticationAPI } from '@/apis/authentication';
 const LoginPage: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [admin, setAdmin] = useState<any>(null);
 
   const onFinish = async (values: any) => {
     setLoading(true);
@@ -17,23 +18,22 @@ const LoginPage: React.FC = () => {
 
       if (userData) {
         message.success('Login successful!');
-
-        localStorage.setItem('username', userData.username);
-        console.log('Username:', userData.username);
         
-        switch (userData.role) {
-          case 'admin':
-            router.push('/admin');
-            break;
-          case 'police':
-            router.push('/police');
-            break;
-          case 'securitystaff':
-            router.push('/securitystaff');
-            break;
-          default:
-            router.push('/register');
-            break;
+        if (userData.role === 'admin') {
+          setAdmin(userData); 
+          router.push('/admin');
+        } else {
+          switch (userData.role) {
+            case 'police':
+              router.push('/police');
+              break;
+            case 'securitystaff':
+              router.push('/securitystaff');
+              break;
+            default:
+              router.push('/register');
+              break;
+          }
         }
       }
     } catch (error) {
@@ -53,8 +53,8 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="h-screen flex items-center justify-center bg-gray-600 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full w-full space-y-8">
         <Form
           name="normal_login"
           className="space-y-4"
@@ -83,13 +83,13 @@ const LoginPage: React.FC = () => {
             <Button type="link" onClick={handleForgot}>Forgot password</Button>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="w-full" loading={loading}>
+            <Button type="primary" htmlType="submit" className="w-full  bg-blue-400" loading={loading}>
               Log in
             </Button>
           </Form.Item>
         </Form>
         <div className="flex justify-between">
-          <Button type="link" onClick={handleRegister}>Register Now</Button>
+          <Button type="link" className='items-center' onClick={handleRegister}>Register Now</Button>
         </div>
       </div>
     </div>

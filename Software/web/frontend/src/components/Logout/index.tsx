@@ -4,7 +4,7 @@ import { Button, message } from 'antd';
 import { useRouter } from 'next/navigation';
 import { LogoutOutlined } from '@ant-design/icons';
 
-type CurrentPageType = 'AdminPage' | 'police' | 'security-staff';
+type CurrentPageType = 'admin' | 'police' | 'security-staff';
 
 const Logout = () => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const Logout = () => {
 
   return (
     <Button
-      className='h-auto px-3 py-2 shadow-sm shadow-slate-300'
+      className='h-auto px-3 py-2 shadow-sm shadow-slate-300 fixed-logout'
       type='primary'
       onClick={handleLogout}
     >
@@ -34,7 +34,7 @@ const Logout = () => {
 const ConditionalLogout: React.FC<{ currentPage: CurrentPageType }> = ({ currentPage }) => {
   const [showLogout, setShowLogout] = useState(false);
   useEffect(() => {
-    if (currentPage === 'AdminPage' || currentPage === 'police' || currentPage === 'security-staff') {
+    if (currentPage === 'admin' || currentPage === 'police' || currentPage === 'security-staff') {
       setShowLogout(true);
     } else {
       setShowLogout(false); 

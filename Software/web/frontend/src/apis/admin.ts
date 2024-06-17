@@ -11,5 +11,8 @@ export const usingAdminAPI = {
     },
     getUsername: (adminId: string) => {
         return ADMIN_API.get(`/get-username/${adminId}`);
+    },
+    get_list: () => {
+        return ADMIN_API.get('/get_list');
     }
 };

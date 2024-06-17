@@ -8,5 +8,5 @@ class IoTDevice(Base):
 
     id = Column(String(50), primary_key=True)
     power = Column(Boolean, nullable=False)
-    geolocation = Column(Geometry('POINT'), nullable=False)
-    admin_id = Column(String(50), nullable=False)
+    geolocation = Column(String(50), nullable=False)
+    username_admin = Column(String(50), nullable=False)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union
+from typing import List, Union
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from db import SessionLocal
@@ -25,6 +25,11 @@ def get_db():
         db.close()
 
 logging.basicConfig(level=logging.INFO)
+
+@router.get("/get_list", response_model=List[str])
+def get_admin_username_list(db: Session = Depends(get_db)):
+    admin_usernames = db.query(Admin.username).all()
+    return [username for (username,) in admin_usernames]
 
 @router.get("/get-username/{admin_id}", response_model=AdminSchema)
 def get_admin_username(admin_id: str, db: Session = Depends(get_db)):

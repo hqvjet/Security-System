@@ -27,6 +27,6 @@ class Login(BaseModel):
     password: str
 
 class AdminSchema(AdminBase):
-
+    username: str
     class Config:
         orm_mode = True

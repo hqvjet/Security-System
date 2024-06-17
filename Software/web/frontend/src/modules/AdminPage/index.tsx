@@ -1,10 +1,9 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Col, Table, MenuProps, Button, Space } from "antd";
+import { Col, Table, Button, Space } from "antd";
 import HorizontalNavigation from "@/components/HorizontalNavigation";
-import axios from 'axios';
 import MyLineChart from '@/components/Chart';
-import { FcAddDatabase, FcDeleteColumn, FcDeleteDatabase, FcDeleteRow, FcEditImage, FcStatistics } from 'react-icons/fc';
+import { FcAddDatabase, FcDeleteRow, FcEditImage, FcStatistics } from 'react-icons/fc';
 import { GiPoliceOfficerHead } from 'react-icons/gi';
 import { GoDeviceCameraVideo } from 'react-icons/go';
 import { SiSpringsecurity } from 'react-icons/si';
@@ -82,7 +81,7 @@ const Admin = () => {
 
   const handleDelete = (record: { [key: string]: any }) => {
     const { id } = record;
-    if (confirm('Are you sure you want to delete this record?')) {
+    if (window.confirm('Are you sure you want to delete this record?')) {
       let api;
       switch (current) {
         case 'security':
@@ -111,7 +110,7 @@ const Admin = () => {
   
 
   return (
-    <Col className="w-5/6 h-3/4">
+    <Col className="max-w-full max-h-full">
       <Space direction="vertical" style={{ width: '100%' }}>
         <Space direction="horizontal" style={{ justifyContent: 'flex-end', marginBottom: '1rem', color: 'green', borderRadius:'10px'}}>
           <Button icon={<FcAddDatabase />} style={{ borderColor:'blueviolet'}} type="primary" onClick={handleAddStaff}>Add New Staff</Button>
@@ -174,7 +173,3 @@ const Admin = () => {
 }
 
 export default Admin;
-
-function setColumns(arg0: ({ title: string; dataIndex: string; key: string; } | { title: string; key: string; render: (record: any) => React.JSX.Element; })[]) {
-  throw new Error('Function not implemented.');
-}

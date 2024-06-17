@@ -1,16 +1,19 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
-import { useRouter } from 'next/navigation';
-import { usingAdminAPI } from '@/apis/admin'
+import { useRouter, useSearchParams } from 'next/navigation';
+import { usingAdminAPI } from '@/apis/admin';
 import { usingIotDeviceAPI } from '@/apis';
 
-const AddIoTDeviceForm = () => {
+const EditIoTDeviceForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [adminUsernames, setAdminUsernames] = useState<string[]>([]);
+  const [form] = Form.useForm();
 
   useEffect(() => {
+    // Effect for fetching admin usernames
     const fetchAdminUsernames = async () => {
       try {
         const response = await usingAdminAPI.get_list();
@@ -23,6 +26,27 @@ const AddIoTDeviceForm = () => {
 
     fetchAdminUsernames();
   }, []);
+
+  useEffect(() => {
+    // Effect for fetching IoT device data based on URL parameters
+    const fetchDeviceData = async () => {
+      const id = searchParams.get('id');
+      const type = searchParams.get('type');
+      
+      if (id && type === 'iot') { // Check if type is 'iot' (IoT device)
+        try {
+          // Assuming you have an API endpoint to fetch device details by ID
+          const response = await usingIotDeviceAPI.get(id);
+          form.setFieldsValue(response.data); // Populate form with fetched data
+        } catch (error) {
+          console.error('Error fetching IoT device data:', error);
+          message.error('Failed to fetch IoT device data');
+        }
+      }
+    };
+
+    fetchDeviceData();
+  }, [searchParams, form]); // Dependency array includes form instance and searchParams
 
   const onFinish = async (values: { [key: string]: any }) => {
     try {
@@ -46,6 +70,7 @@ const AddIoTDeviceForm = () => {
   return (
     <div>
       <Form
+        form={form} 
         name="addIotDevice"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
@@ -59,7 +84,7 @@ const AddIoTDeviceForm = () => {
           name="id"
           rules={[{ required: true, message: 'Please input ID!' }]}
         >
-          <Input />
+          <Input disabled={true} />
         </Form.Item>
 
         <Form.Item
@@ -97,7 +122,7 @@ const AddIoTDeviceForm = () => {
 
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit" loading={loading}>
-            Add IoT Device
+            Save IoT Device
           </Button>
         </Form.Item>
       </Form>
@@ -105,4 +130,4 @@ const AddIoTDeviceForm = () => {
   );
 };
 
-export default AddIoTDeviceForm;
+export default EditIoTDeviceForm;

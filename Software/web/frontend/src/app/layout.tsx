@@ -13,18 +13,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const path = usePathname();
-  const isAdminPage = path.includes('/admin');
 
   return (
     <html lang="en">
       <body className={inter.className}>
-          <Col className='full-screen bg-slate-500'>
-            {isAdminPage && (
-              <Row align={'middle'} justify={'end'} className='w-full fixed p-5'>
+          <Col className='max-h-screen bg-slate-500'>
+              <Row align={'middle'} justify={'end'} className='w-full fixed p-10'>
                 <AvatarField currentPage={"AdminPage"} />
               </Row>
-            )}
             <Row className='w-full h-full' justify={'center'} align={'middle'}>
               {children}
             </Row>
