@@ -1,11 +1,73 @@
 'use client'
-import React, { useState } from 'react';
-import { Button, Row, Col, Space } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Row, Col, Space, message, Modal } from 'antd';
 import { VideoCameraOutlined, EnvironmentOutlined, CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { usingSecurityStaffAPI } from '@/apis/security_staff.ts'
 
 const SecurityStaffDashboard = () => {
     const [showMap, setShowMap] = useState(false);
     const [detected, setDetected] = useState(false);
+    const [videoURL, setVideoURL] = useState(null)
+    const [audio] = useState(new Audio('sound/alert.mp3'))
+    const videoRef = useRef(null)
+
+    // Check for violence status per 3 seconds
+    useEffect(() => {
+        let isMounted = true;
+        
+        const fetchViolenceStatus = () => {
+            if (isMounted) {
+                if (!detected) {
+                    usingSecurityStaffAPI.checkViolenceStatus()
+                        .then((res: any) => {
+                            console.log(res)
+                            if (res.data.message == 1) {
+                                playAlert()
+                                setDetected(true)
+                            }
+                            else
+                                setDetected(false)
+                        })
+                        .catch((e) => {
+                            console.log(e)
+                            message.error('Ohhh! There are some errors')
+                        })
+                }
+
+                setTimeout(fetchViolenceStatus, 3000)
+            }
+        }
+
+        fetchViolenceStatus()
+
+        return () => {
+            isMounted = false
+        }
+    }, [])
+
+    useEffect(() => {
+        if (detected) {
+            usingSecurityStaffAPI.getViolenceVideo()
+                .then((res: any) => {
+                    const video_blob = new Blob([res.data], {type: 'video/mp4'})
+                    const video_URL = URL.createObjectURL(video_blob)
+                    // console.log(video_URL)
+                    setVideoURL(video_URL)
+                })
+                .catch((e) => {
+                    console.log(e)
+                    message.error('Error While Fetching Video!')
+                })
+        }
+    }, [detected])
+
+    const playAlert = () => {
+        audio.currentTime = 0;
+        audio.play()
+    }
+    const stopAlert = () => {
+        audio.pause()
+    }
 
     const handleAlert = () => {
         
@@ -25,6 +87,14 @@ const SecurityStaffDashboard = () => {
 
     const handleCancel = () => {
         // Xử lý hủy bỏ yêu cầu
+        usingSecurityStaffAPI.denyViolence()
+            .then((res: any) => {
+                setDetected(false)
+                stopAlert()
+            })
+            .catch(e => {
+                console.log(e)
+            })
     };
 
     const toggleMap = () => {
@@ -38,11 +108,17 @@ const SecurityStaffDashboard = () => {
                     <Row gutter={[16, 16]}>
                         <Col span={18}>
                             {/* Khung video chính hoặc map */}
-                            <div style={{ border: '1px solid #ccc', width : '800px', height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <div style={{ border: '1px solid #ccc', width : '600px', height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 {showMap ? (
                                     <div>Hiển thị map ở đây</div>
                                 ) : (
-                                    <VideoCameraOutlined style={{ fontSize: '64px', color: '#ccc' }} />
+                                    videoURL == null ? (
+                                        <p>LOADING VIDEO</p> ) :
+                                    (
+                                        <video controls className='w-full h-full'>
+                                            <source src={videoURL}/>
+                                        </video>
+                                    )
                                 )}
                             </div>
                         </Col>
