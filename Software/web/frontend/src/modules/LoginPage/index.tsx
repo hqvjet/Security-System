@@ -55,6 +55,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-600 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-full w-full space-y-8">
+        <h1 className="text-center text-4xl text-white font-bold">Login</h1> {/* Đây là phần tiêu đề */}
         <Form
           name="normal_login"
           className="space-y-4"

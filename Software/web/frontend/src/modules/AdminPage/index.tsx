@@ -110,7 +110,7 @@ const Admin = () => {
   
 
   return (
-    <Col className="max-w-full max-h-full">
+    <Col className="max-w-full h-5/6 mt-40">
       <Space direction="vertical" style={{ width: '100%' }}>
         <Space direction="horizontal" style={{ justifyContent: 'flex-end', marginBottom: '1rem', color: 'green', borderRadius:'10px'}}>
           <Button icon={<FcAddDatabase />} style={{ borderColor:'blueviolet'}} type="primary" onClick={handleAddStaff}>Add New Staff</Button>
@@ -133,7 +133,7 @@ const Admin = () => {
             }]}
 
             dataSource={data}
-            className="bg-gray-800 border border-gray-700 divide-y divide-gray-700"
+            className="bg-gray-800 border border-gray-700 w-full max-w-full divide-gray-700"
             components={{
               header: {
                 cell: (props: { children: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; }) => <th className="bg-gray-900 text-white">{props.children}</th>,

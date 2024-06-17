@@ -6,7 +6,7 @@ export default function Home() {
       <Col span={12} style={{ textAlign: 'center' }}>
         <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>Hệ thống phòng chống bạo lực</h1>
         <p style={{ fontSize: '1.2rem', color: '#555', marginBottom: '2rem' }}>
-          Chào mừng bạn đến với hệ thống phòng chống bạo lực, nơi xử lý các vấn đề liên quan đến bạo lực.
+          Hệ thống phòng chống bạo lực - xử lý các vấn đề liên quan đến bạo lực.
         </p>
         <Row justify="center">
           <Col>

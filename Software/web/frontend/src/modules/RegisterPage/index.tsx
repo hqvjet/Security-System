@@ -47,6 +47,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div>
+      <h1 className="text-4xl text-center text-white font-bold mb-4 ml-20">Register</h1>
       <Form
         name="register"
         labelCol={{ span: 8 }}
@@ -149,14 +150,14 @@ const RegisterForm: React.FC = () => {
           <Checkbox>I agree to the terms and conditions</Checkbox>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 12, span: 16 }}>
+        <Form.Item wrapperCol={{ offset: 13, span: 16 }}>
           <Button style = {{background:"#1944BA"}} type="primary" htmlType="submit" loading={loading}>
             Register
           </Button>
         </Form.Item>
 
         <div style={{ textAlign: 'center', marginTop: '20px', marginLeft:'100px' }}>
-          Already have an account? <Button type="link" onClick={handleLogin}>Login</Button>
+          Already have an account? <Button type="link" className = 'text-blue-200' onClick={handleLogin}>Login</Button>
         </div>
       </Form>
     </div>
