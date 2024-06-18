@@ -1,4 +1,5 @@
 flask
+ffmpeg-python
 fastapi
 uvicorn[standard]
 sqlalchemy
