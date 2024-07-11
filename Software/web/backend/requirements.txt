@@ -1,0 +1,11 @@
+flask
+ffmpeg-python
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+python-dotenv
+GeoAlchemy2
+passlib
+postgis
+# postgresql-"version" 16 -postgis-3
