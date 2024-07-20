@@ -1,9 +1,24 @@
 'use client'
-import { Col, Row, Menu } from "antd"
+import { Menu } from "antd";
+import { MenuProps } from 'antd';
 import { useState } from "react";
 
-export default function HorizontalNavigation(props: any) {
+interface HorizontalNavigationProps {
+  onClick: MenuProps['onClick'];
+  current: string;
+  items: MenuProps['items'];
+}
+
+export default function HorizontalNavigation(props: HorizontalNavigationProps) {
     return (
-        <Menu onClick={props.onClick} selectedKeys={[props.current]} mode="horizontal" items={props.items} className="rounded-full mb-5 w-1/3"/>
+        <div className="flex justify-start w-[460px]">
+            <Menu 
+                onClick={props.onClick} 
+                selectedKeys={[props.current]} 
+                mode="horizontal" 
+                items={props.items} 
+                className="rounded-full mb-5 w-[500px]"
+            />
+        </div>
     )
 }

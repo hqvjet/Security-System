@@ -2,17 +2,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Row, Col, Space, message, Select} from 'antd';
 import { CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { usingSecurityStaffAPI, usingPoliceAPI } from '@/apis';
+import { usingSecurityStaffAPI, usingPoliceAPI, usingIotDeviceAPI} from '@/apis';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
+
+
 const SecurityStaffDashboard = () => {
-    const [showMap, setShowMap] = useState(false);
     const [detected, setDetected] = useState(false);
     const [accepted, setAccepted] = useState(false);
     const [videoURL, setVideoURL] = useState(null);
     const [audio] = useState(new Audio('sound/alert.mp3'));
     const videoRef = useRef(null)
-    const [policeList, setPoliceList] = useState([]);
+    const [policeList, setPoliceList] = useState<any[]>([]);
+    const [iotDevices, setIotDevices] = useState<IoTDevice[]>([]);
+
+    interface IoTDevice {
+        id: string;
+        geolocation: string;
+    }
 
     const mapContainerStyle = {
         width: '100%',
@@ -20,12 +27,11 @@ const SecurityStaffDashboard = () => {
     };
     const { Option } = Select;
     const center = {
-        lat: 15.974584,
-        lng: 108.2497158,
-    };
-
+        lat: 15.974684369487031,
+        lng: 108.25214311410093,
+    };    
     useEffect(() => {
-        let isMounted = true;
+        let isMounted = false;
 
         const fetchViolenceStatus = () => {
             if (isMounted) {
@@ -84,6 +90,23 @@ const SecurityStaffDashboard = () => {
 
         fetchPoliceList();
     }, []);
+
+    useEffect(() => {
+        const fetchIotDevices = async () => {
+            try {
+                const response = await usingIotDeviceAPI.getList();
+                // const filteredDevices = response.data.filter((device: IoTDevice) => device.id === 'iot_0001');
+                // setIotDevices(filteredDevices);
+                console.log(response.data); 
+                setIotDevices(response.data);
+            } catch (error) {
+                console.error("Error fetching IoT devices:", error);
+            }
+        };
+
+        fetchIotDevices();
+    }, []);
+
     const playAlert = () => {
         audio.currentTime = 0;
         audio.play();
@@ -108,10 +131,6 @@ const SecurityStaffDashboard = () => {
                 console.log(e);
             });
     };
-
-    const toggleMap = () => {
-        setShowMap(!showMap);
-    };
     
     return (
         <div className="p-5">
@@ -120,11 +139,20 @@ const SecurityStaffDashboard = () => {
                     <>
                         <Row gutter={[16, 16]}>
                             <Col span={18}>
-                                <div className="border border-gray-300 w-[1200px] h-[880px] flex justify-center items-center">
+                                <div className="border border-gray-800 w-[1200px] h-[880px] flex justify-center items-center">
                                     <LoadScript googleMapsApiKey="AIzaSyALdtjS7fTDhDdrqyp6eQ1nOfNu86MmdJM">
-                                        <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={15}>
-                                            <Marker position={center} />
-                                        </GoogleMap>
+                                        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={18} center={center} options={{mapTypeId: 'hybrid'}}>
+                                                {iotDevices.map(device => {
+                                                    const [lat, lng] = device.geolocation.split(';').map(Number);
+                                                    message.info(`Latitude: ${lat}, Longitude: ${lng}`);
+                                                    return (
+                                                        <Marker
+                                                            key={device.id}
+                                                            position={{ lat, lng }}
+                                                        />
+                                                    );
+                                                })}
+                                            </GoogleMap>
                                     </LoadScript>
                                 </div>
                             </Col>
@@ -133,16 +161,10 @@ const SecurityStaffDashboard = () => {
                                     <Space direction="vertical" className="w-full max-w-xs pt-24">
                                         <Button className="mb-5 text-2xl bg-green-400" type="primary" block>Lưu video</Button>
                                         <Button className="mb-5 text-2xl" type="primary" block>Tắt chuông</Button>
-                                        {/* <Select mode="multiple" className="w-[200px] text-xl" placeholder="Chọn police">
+                                        <Select mode="multiple" className="w-[200px] text-xl" placeholder="Chọn police">
                                             {policeList.map(police => (
                                                 <Option key={police.id} value={police.id}>{police.name}</Option>
                                             ))}
-                                        </Select> */}
-                                        <Select mode="multiple" className="w-[200px] text-xl" placeholder="Chọn police">
-                                            <Option value="police1">Police 1</Option>
-                                            <Option value="police2">Police 2</Option>
-                                            <Option value="police3">Police 3</Option>
-                                            <Option value="police4">Police 4</Option>
                                         </Select>
                                         <Button className="mb-5 text-2xl" type="primary" block>Giao Nhiệm Vụ</Button>
                                     </Space>

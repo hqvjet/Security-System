@@ -1,10 +1,5 @@
 import {  SECURITY_STAFF_API } from './index'
 
-// export const SECURITY_STAFF_API = axios.create({
-//     baseURL: process.env.NEXT_PUBLIC_API_URL + '/security',
-//     timeout: 10000
-// });
-
 export const usingSecurityStaffAPI = {
     getList: () => {
         return SECURITY_STAFF_API.get('/get_list');
