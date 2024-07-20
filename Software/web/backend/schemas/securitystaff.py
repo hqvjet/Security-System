@@ -37,7 +37,7 @@ class SecurityStaffUpdate(SecurityStaffBase):
 
 class SecurityStaff(SecurityStaffBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
  
 
 class Login(BaseModel):

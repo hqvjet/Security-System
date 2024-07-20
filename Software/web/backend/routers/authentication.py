@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from db import SessionLocal
 from models.admin import Admin
+from models.police import Police
+from models.securitystaff import SecurityStaff
 from schemas.admin import AdminCreate, Login
 from passlib.hash import bcrypt
 from passlib.context import CryptContext
@@ -59,9 +61,18 @@ def register_admin_user(admin_data: AdminCreate, db: Session = Depends(get_db)):
 @router.post('/login')
 def login(request: Login, db: Session = Depends(get_db)):
     user = db.query(Admin).filter(Admin.username == request.username).first()
-    if not user or not pwd_context.verify(request.password, user.password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password"
-        )
-    return {"username": user.username, "role": user.role}
+    if user and pwd_context.verify(request.password, user.password):
+        return {"username": user.username, "role": user.role}
+
+    user = db.query(SecurityStaff).filter(SecurityStaff.username == request.username).first()
+    if user and pwd_context.verify(request.password, user.password):
+        return {"username": user.username, "role": user.role}
+
+    user = db.query(Police).filter(Police.username == request.username).first()
+    if user and pwd_context.verify(request.password, user.password):
+        return {"username": user.username, "role": user.role}
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Incorrect username or password"
+    )

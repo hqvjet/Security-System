@@ -29,4 +29,4 @@ class Login(BaseModel):
 class AdminSchema(AdminBase):
     username: str
     class Config:
-        orm_mode = True
+        from_attributes = True
