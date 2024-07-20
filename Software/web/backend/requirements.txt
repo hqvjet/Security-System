@@ -8,4 +8,4 @@ python-dotenv
 GeoAlchemy2
 passlib
 postgis
-# postgresql-"version" 16 -postgis-3
+ffmpeg

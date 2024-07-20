@@ -24,54 +24,54 @@ const SecurityStaffDashboard = () => {
         lng: 108.2497158,
     };
 
-    // useEffect(() => {
-    //     let isMounted = true;
+    useEffect(() => {
+        let isMounted = true;
 
-    //     const fetchViolenceStatus = () => {
-    //         if (isMounted) {
-    //             if (!detected) {
-    //                 usingSecurityStaffAPI.checkViolenceStatus()
-    //                     .then((res: any) => {
-    //                         console.log(res);
-    //                         if (res.data.message == 1) {
-    //                             playAlert();
-    //                             setDetected(true);
-    //                         } else {
-    //                             setDetected(false);
-    //                         }
-    //                     })
-    //                     .catch((e) => {
-    //                         console.log(e);
-    //                         message.error('Ohhh! There are some errors');
-    //                     });
-    //             }
+        const fetchViolenceStatus = () => {
+            if (isMounted) {
+                if (!detected) {
+                    usingSecurityStaffAPI.checkViolenceStatus()
+                        .then((res: any) => {
+                            console.log(res);
+                            if (res.data.message == 1) {
+                                playAlert();
+                                setDetected(true);
+                            } else {
+                                setDetected(false);
+                            }
+                        })
+                        .catch((e) => {
+                            console.log(e);
+                            message.error('Ohhh! There are some errors');
+                        });
+                }
 
-    //             setTimeout(fetchViolenceStatus, 3000);
-    //         }
-    //     };
+                setTimeout(fetchViolenceStatus, 3000);
+            }
+        };
 
-    //     fetchViolenceStatus();
+        fetchViolenceStatus();
 
-    //     return () => {
-    //         isMounted = false;
-    //     };
-    // }, []);
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
-    // useEffect(() => {
-    //     if (detected) {
-    //         usingSecurityStaffAPI.getViolenceVideo()
-    //             .then((res: any) => {
-    //                 const video_blob = new Blob([res.data], { type: 'video/mp4' });
-    //                 const video_URL = URL.createObjectURL(video_blob);
-    //                 console.log(video_URL);
-    //                 setVideoURL(video_URL);
-    //             })
-    //             .catch((e) => {
-    //                 console.log(e);
-    //                 message.error('Error While Fetching Video!');
-    //             });
-    //     }
-    // }, [detected]);
+    useEffect(() => {
+        if (detected) {
+            usingSecurityStaffAPI.getViolenceVideo()
+                .then((res: any) => {
+                    const video_blob = new Blob([res.data], { type: 'video/mp4' });
+                    const video_URL = URL.createObjectURL(video_blob);
+                    console.log(video_URL);
+                    setVideoURL(video_URL);
+                })
+                .catch((e) => {
+                    console.log(e);
+                    message.error('Error While Fetching Video!');
+                });
+        }
+    }, [detected]);
     useEffect(() => {
         const fetchPoliceList = async () => {
             try {
@@ -121,7 +121,7 @@ const SecurityStaffDashboard = () => {
                         <Row gutter={[16, 16]}>
                             <Col span={18}>
                                 <div className="border border-gray-300 w-[1200px] h-[880px] flex justify-center items-center">
-                                    <LoadScript googleMapsApiKey="AIzaSyA84gZBiZojqUAE9U-IntmFWssuxAwC_QQ">
+                                    <LoadScript googleMapsApiKey="AIzaSyALdtjS7fTDhDdrqyp6eQ1nOfNu86MmdJM">
                                         <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={15}>
                                             <Marker position={center} />
                                         </GoogleMap>
