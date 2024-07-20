@@ -161,11 +161,11 @@ const SecurityStaffDashboard = () => {
                     <Col span={18}>
               <div style={{ border: '1px solid #ccc', width: '1200px', height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {showMap ? (
-                  <LoadScript googleMapsApiKey="AIzaSyA84gZBiZojqUAE9U-IntmFWssuxAwC_QQ">
+                  <LoadScript googleMapsApiKey=process.env.NEXT_PUBLIC_KEY_GOOGLE_MAP>
                     <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={15}>
                       <Marker position={center} />
                     </GoogleMap>
-                  </LoadScript>
+                  </LoadScript googleMapsApiKey=process.env.NEXT_PUBLIC_KEY_GOOGLE_MAP>
                                 ) : (
                                     videoURL == null ? (
                                         <p>LOADING VIDEO</p> ) :
