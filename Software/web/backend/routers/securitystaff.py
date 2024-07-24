@@ -18,7 +18,7 @@ router = APIRouter(
     tags=['Security Staff']
 )
 
-is_violence = False
+is_violence = True
 violence_video = None
 buffer = BytesIO()
 

@@ -13,7 +13,7 @@ export const POLICE_API = axios.create({
 })
 
 export const SECURITY_STAFF_API = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL + '/security',
+    baseURL: process.env.NEXT_PUBLIC_API_URL + '/security_staff',
     timeout: 10000
 })
 
