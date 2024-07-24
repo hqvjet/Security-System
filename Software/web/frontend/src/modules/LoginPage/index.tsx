@@ -4,12 +4,10 @@ import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { usingAuthenticationAPI } from '@/apis/authentication';
-import {usingSecurityStaffAPI} from '@/apis/security_staff'
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [admin, setAdmin] = useState<any>(null);
 
   const onFinish = async (values: any) => {
     setLoading(true);
@@ -20,21 +18,19 @@ const LoginPage: React.FC = () => {
       if (userData) {
         message.success('Login successful!');
         
-        if (userData.role === 'admin') {
-          setAdmin(userData); 
-          router.push('/admin');
-        } else {
-          switch (userData.role) {
-            case 'police':
-              router.push('/police');
-              break;
-            case 'security-staff':
-              router.push('/security-staff');
-              break;
-            default:
-              router.push('/register');
-              break;
-          }
+        switch (userData.role) {
+          case 'admin':
+            router.push('/admin');
+            break;
+          case 'police':
+            router.push('/police');
+            break;
+          case 'security':
+            router.push('/security-staff');
+            break;
+          default:
+            router.push('/register');
+            break;
         }
       }
     } catch (error) {
@@ -56,7 +52,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-600 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-full w-full space-y-8">
-        <h1 className="text-center text-4xl text-white font-bold">Login</h1> {/* Đây là phần tiêu đề */}
+        <h1 className="text-center text-4xl text-white font-bold">Login</h1>
         <Form
           name="normal_login"
           className="space-y-4"

@@ -15,7 +15,7 @@ const items = [
   { label: 'Police', key: 'police', icon: <GiPoliceOfficerHead /> },
   { label: 'Security Staff', key: 'security', icon: <SiSpringsecurity /> },
   { label: 'IoT Device', key: 'iot', icon: <GoDeviceCameraVideo /> },
-  { label: 'Statistic',  key: 'statistic', icon: <FcStatistics />, },
+  { label: 'Statistic', key: 'statistic', icon: <FcStatistics />, },
 ];
 
 const Admin = () => {
@@ -47,19 +47,28 @@ const Admin = () => {
       }
       const response = await api.getList();
       setData(response.data);
+  
       if (response.data.length > 0) {
         const firstDataItem = response.data[0];
-        const columns = Object.keys(firstDataItem).map(key => ({
-          title: key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-          dataIndex: key,
-          key: key,
-        }));
+        const columns = Object.keys(firstDataItem).map(key => {
+          return {
+            title: key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+            dataIndex: key,
+            key: key,
+            render: (text: any) => {
+              if (typeof text === 'boolean') {
+                return text ? 'On' : 'Off';
+              }
+              return text;
+            },
+          };
+        });
         setCol(columns);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  };  
   
   const onClick = (e: { key: React.SetStateAction<string>; }) => {
     setCurrent(e.key);
@@ -107,25 +116,24 @@ const Admin = () => {
         });
     }
   };
-  
 
   return (
-    <Col className="max-w-full h-5/6 mt-40">
-      <Space direction="vertical" style={{ width: '100%' }}>
-        <Space direction="horizontal" style={{ justifyContent: 'flex-end', marginBottom: '1rem', color: 'green', borderRadius:'10px'}}>
-          <Button icon={<FcAddDatabase />} style={{ borderColor:'blueviolet'}} type="primary" onClick={handleAddStaff}>Add New Staff</Button>
-          <Button style={{marginLeft:'10px', borderColor:'blueviolet'}} type="primary" onClick={handleAddIotDevice}>Add New Iot Device</Button>
-        </Space>
-        <HorizontalNavigation onClick={onClick} current={current} items={items} style={{width:'2000px'}}/>
-        
+    <Col className="w-auto h-5/6 mt-40">
+      <Space direction="vertical" className='w-full'>
+      <Space direction="horizontal" className="flex justify-start ml-14 mb-4 text-green-500 rounded-lg">
+        <Button icon={<FcAddDatabase />} type="primary" className="border-blue-500" onClick={handleAddStaff}>Add New Staff</Button>
+        <Button type="primary" className="ml-2 border-blue-500" onClick={handleAddIotDevice}>Add New IoT Device</Button>
+      </Space>
+        <div className='m-5 w-full'>
+          <HorizontalNavigation onClick={onClick} current={current} items={items} />
+        </div>
         {!statis ? (
           <Table
-            // columns={col}
             columns={[...col, {
               title: 'Actions',
               key: 'operation',
               render: (record) => (
-                <Space>
+                <Space className='flex justify-end'>
                   <Button type="primary" icon={<FcEditImage/>} onClick={() => handleEdit(record)}>Edit</Button>
                   <Button type="primary" icon={<FcDeleteRow/>} danger onClick={() => handleDelete(record)}>Delete</Button>
                 </Space>
@@ -133,14 +141,15 @@ const Admin = () => {
             }]}
 
             dataSource={data}
-            className="bg-gray-800 border border-gray-700 w-full max-w-full divide-gray-700"
+            className="bg-gray-800 border border-gray-700 ml-10, mr-10 w-full divide-gray-700"
+            scroll={{ x: 1000, y: 400 }}
             components={{
               header: {
-                cell: (props: { children: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; }) => <th className="bg-gray-900 text-white">{props.children}</th>,
+                cell: (props: { children: React.ReactNode }) => <th className="bg-gray-900 text-white">{props.children}</th>,
               },
               body: {
-                row: (props: { children: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; }) => <tr className="bg-gray-800 hover:bg-gray-700 text-white">{props.children}</tr>,
-                cell: (props: { children: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; }) => <td className="p-2">{props.children}</td>,
+                row: (props: { children: React.ReactNode }) => <tr className="bg-gray-800 hover:bg-gray-700 text-white">{props.children}</tr>,
+                cell: (props: { children: React.ReactNode }) => <td className="p-2">{props.children}</td>,
               },
             }}
             pagination={{
@@ -165,7 +174,9 @@ const Admin = () => {
             }}
           />
         ) : (
-          <MyLineChart/>
+          <div className='flex justify-self-center'>
+            <MyLineChart/>
+          </div>
         )}
       </Space>
     </Col>
