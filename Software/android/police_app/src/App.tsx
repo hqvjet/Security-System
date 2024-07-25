@@ -15,15 +15,33 @@ import {
   View,
 } from 'react-native';
 import tw from 'twrnc';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Layout from './layout/Layout';
+import Login from './Authen/Login';
+import Footer from './Footer/Footer';
+import Header from './Header/Header';
+
+const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
 
   return (
-    <Layout>
-      
-    </Layout>
+    <>
+      <Header />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name='Login'
+            component={Login}
+            options={{ headerShown: false }}
+          />
+
+        </Stack.Navigator>
+
+      </NavigationContainer>
+      <Footer />
+    </>
   );
 }
 

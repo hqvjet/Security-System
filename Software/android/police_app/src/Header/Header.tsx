@@ -1,10 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
 import type { PropsWithChildren } from 'react';
 import {
@@ -18,11 +11,13 @@ import tw from 'twrnc';
 
 import Login from '../Authen/Login';
 
-function Layout({children}): React.JSX.Element {
+function Header({children}): React.JSX.Element {
 
   return (
-    <Login/>
+    <View style={tw`bg-black w-full`}>
+      <Text style={tw`text-white`}>Hello</Text>
+    </View>
   );
 }
 
-export default Layout;
+export default Header;
