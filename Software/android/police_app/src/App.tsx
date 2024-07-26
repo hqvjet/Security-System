@@ -15,15 +15,34 @@ import {
   View,
 } from 'react-native';
 import tw from 'twrnc';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Layout from './layout/Layout';
+import Login from './Authen/Login';
+import MapCustom from './Map/MapCustom';
+
+const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
 
   return (
-    <Layout>
-      
-    </Layout>
+    <>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name='Login'
+            component={Login}
+            options={{ headerShown: false }}
+          />
+
+        {/* <Stack.Screen
+            name='MapCustom'
+            component={MapCustom}
+            options={{ headerShown: false }}
+          />*/}
+        </Stack.Navigator> 
+      </NavigationContainer>
+    </>
   );
 }
 
