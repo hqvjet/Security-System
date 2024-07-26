@@ -19,8 +19,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Login from './Authen/Login';
-import Footer from './Footer/Footer';
-import Header from './Header/Header';
+import MapCustom from './Map/MapCustom';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +27,6 @@ function App(): React.JSX.Element {
 
   return (
     <>
-      <Header />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -37,10 +35,13 @@ function App(): React.JSX.Element {
             options={{ headerShown: false }}
           />
 
-        </Stack.Navigator>
-
+        {/* <Stack.Screen
+            name='MapCustom'
+            component={MapCustom}
+            options={{ headerShown: false }}
+          />*/}
+        </Stack.Navigator> 
       </NavigationContainer>
-      <Footer />
     </>
   );
 }
