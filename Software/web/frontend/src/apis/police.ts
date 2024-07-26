@@ -7,9 +7,6 @@ export const usingPoliceAPI = {
     get: (policeId: string) => {
         return POLICE_API.get(`/get/${policeId}`);
     },
-    create: (policeData: { [key: string]: any }) => {
-        return POLICE_API.post('/create', policeData);
-    },
     delete: (policeId: string) => {
         return POLICE_API.delete(`/delete/${policeId}`);
     },

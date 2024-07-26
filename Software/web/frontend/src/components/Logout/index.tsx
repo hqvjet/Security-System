@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { LogoutOutlined } from '@ant-design/icons';
-
-type CurrentPageType = 'admin' | 'police' | 'security-staff';
 
 const Logout = () => {
   const router = useRouter();
@@ -30,15 +28,17 @@ const Logout = () => {
   );
 };
 
-const ConditionalLogout: React.FC<{ currentPage: CurrentPageType }> = ({ currentPage }) => {
+const ConditionalLogout: React.FC = () => {
+  const pathname = usePathname();
   const [showLogout, setShowLogout] = useState(false);
+
   useEffect(() => {
-    if (currentPage === 'admin' || currentPage === 'police' || currentPage === 'security-staff') {
+    if (pathname?.startsWith('/admin') || pathname?.startsWith('/security-staff')) {
       setShowLogout(true);
     } else {
       setShowLogout(false); 
     }
-  }, [currentPage]);
+  }, [pathname]);
 
   return showLogout ? <Logout /> : null;
 };

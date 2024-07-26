@@ -7,7 +7,6 @@ import os
 load_dotenv()
 SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DB_URL")
 
-# Sửa lại URL kết nối cơ sở dữ liệu
 if not SQLALCHEMY_DATABASE_URL:
     raise ValueError("Missing SQLALCHEMY_DB_URL environment variable")
 

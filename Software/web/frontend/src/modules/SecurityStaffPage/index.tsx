@@ -5,8 +5,6 @@ import { CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { usingSecurityStaffAPI, usingPoliceAPI, usingIotDeviceAPI} from '@/apis';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
-
-
 const SecurityStaffDashboard = () => {
     const [detected, setDetected] = useState(false);
     const [accepted, setAccepted] = useState(false);
@@ -31,7 +29,7 @@ const SecurityStaffDashboard = () => {
         lng: 108.25214311410093,
     };    
     useEffect(() => {
-        let isMounted = false;
+        let isMounted = true;
 
         const fetchViolenceStatus = () => {
             if (isMounted) {
@@ -135,7 +133,7 @@ const SecurityStaffDashboard = () => {
     
     return (
         <div className="p-5">
-            {!detected ? (
+            {detected ? (
                 accepted ? (
                     <>
                         <Row gutter={[16, 16]}>
@@ -145,7 +143,7 @@ const SecurityStaffDashboard = () => {
                                         <GoogleMap mapContainerStyle={mapContainerStyle} zoom={18} center={center} options={{mapTypeId: 'hybrid'}}>
                                             {iotDevices.map(device => {
                                                 const [lat, lng] = device.geolocation.split(';').map(Number);
-                                                message.info(`Latitude: ${lat}, Longitude: ${lng}`);
+                                                // message.info(`Latitude: ${lat}, Longitude: ${lng}`);
                                                 return (
                                                     <Marker
                                                         key={device.id}
