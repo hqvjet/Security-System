@@ -29,18 +29,6 @@ def get_police(police_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Police not found")
     return police
 
-@router.post("/create")
-def create_police(police_data: PoliceCreate, db: Session = Depends(get_db)):
-    try:
-        db_police = Police(**police_data.dict())
-        db.add(db_police)
-        db.commit()
-        db.refresh(db_police)
-        
-        return db_police
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
 @router.delete("/delete/{police_id}")
 def delete_police(police_id: str, db: Session = Depends(get_db)):
     police = db.query(Police).filter(Police.id == police_id).first()
