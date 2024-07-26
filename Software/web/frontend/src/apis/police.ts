@@ -1,10 +1,5 @@
 import { POLICE_API } from './index';
 
-// export const POLICE_API = axios.create({
-//     baseURL: process.env.NEXT_PUBLIC_API_URL + '/police',
-//     timeout: 10000
-// });
-
 export const usingPoliceAPI = {
     getList: () => {
         return POLICE_API.get('/get_list');

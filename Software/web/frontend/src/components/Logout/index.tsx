@@ -1,4 +1,3 @@
-// Import useState, useEffect và React từ React
 import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
 import { useRouter } from 'next/navigation';

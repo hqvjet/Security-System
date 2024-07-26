@@ -22,9 +22,6 @@ const LoginPage: React.FC = () => {
           case 'admin':
             router.push('/admin');
             break;
-          case 'police':
-            router.push('/police');
-            break;
           case 'security':
             router.push('/security-staff');
             break;

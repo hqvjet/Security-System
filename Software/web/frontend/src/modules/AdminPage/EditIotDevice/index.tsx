@@ -13,7 +13,6 @@ const EditIoTDeviceForm = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    // Effect for fetching admin usernames
     const fetchAdminUsernames = async () => {
       try {
         const response = await usingAdminAPI.get_list();
@@ -28,16 +27,14 @@ const EditIoTDeviceForm = () => {
   }, []);
 
   useEffect(() => {
-    // Effect for fetching IoT device data based on URL parameters
     const fetchDeviceData = async () => {
       const id = searchParams.get('id');
       const type = searchParams.get('type');
       
-      if (id && type === 'iot') { // Check if type is 'iot' (IoT device)
+      if (id && type === 'iot') {
         try {
-          // Assuming you have an API endpoint to fetch device details by ID
           const response = await usingIotDeviceAPI.get(id);
-          form.setFieldsValue(response.data); // Populate form with fetched data
+          form.setFieldsValue(response.data);
         } catch (error) {
           console.error('Error fetching IoT device data:', error);
           message.error('Failed to fetch IoT device data');
@@ -46,7 +43,7 @@ const EditIoTDeviceForm = () => {
     };
 
     fetchDeviceData();
-  }, [searchParams, form]); // Dependency array includes form instance and searchParams
+  }, [searchParams, form]);
 
   const onFinish = async (values: { [key: string]: any }) => {
     try {

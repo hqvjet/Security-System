@@ -12,7 +12,6 @@ const EditIoTDeviceForm = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    // Effect for fetching admin usernames
     const fetchAdminUsernames = async () => {
       try {
         const response = await usingAdminAPI.get_list();
@@ -27,16 +26,14 @@ const EditIoTDeviceForm = () => {
   }, []);
 
   useEffect(() => {
-    // Effect for fetching IoT device data based on URL parameters
     const fetchDeviceData = async () => {
       const id = searchParams.get('id');
       const type = searchParams.get('type');
       
-      if (id && type === 'iot') { // Check if type is 'iot' (IoT device)
+      if (id && type === 'iot') {
         try {
-          // Fetch device details by ID
           const response = await usingIotDeviceAPI.get(id);
-          form.setFieldsValue(response.data); // Populate form with fetched data
+          form.setFieldsValue(response.data);
         } catch (error) {
           console.error('Error fetching IoT device data:', error);
           message.error('Failed to fetch IoT device data');
@@ -52,12 +49,10 @@ const EditIoTDeviceForm = () => {
       setLoading(true);
       const id = searchParams.get('id');
       if (id) {
-        // Update existing IoT device
         const response = await usingIotDeviceAPI.update(id, values);
         message.success('IoT Device updated successfully!');
         console.log('IoT Device updated successfully:', response.data);
       } else {
-        // Handle case where ID is missing
         message.error('Device ID is missing');
       }
       setLoading(false);
