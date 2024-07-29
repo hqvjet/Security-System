@@ -11,6 +11,7 @@ import ffmpeg
 from db import SessionLocal
 from passlib.context import CryptContext
 from models.securitystaff import SecurityStaff
+from models.police import Police
 from schemas.securitystaff import Login, SecurityStaffCreate, SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
 
 router = APIRouter(
@@ -126,3 +127,21 @@ def deny_violence():
 # @router.get('/violence/accept')
 # def accept_violence():
 #     pass
+
+@router.post('/assign_tasks')
+def assign_tasks(taskData: dict, db: Session = Depends(get_db)):
+    location = taskData.get('location')
+    police_ids = taskData.get('police')
+    
+    if not location or not police_ids:
+        raise HTTPException(status_code=400, detail="Invalid task data")
+
+    lat = location.get('lat')
+    lng = location.get('lng')
+
+    assigned_police = db.query(Police).filter(Police.id.in_(police_ids)).all()
+
+    if not assigned_police:
+        raise HTTPException(status_code=404, detail="Police not found")
+
+    return {"message": "Task assigned successfully"}

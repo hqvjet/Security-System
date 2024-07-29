@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Col, Table, Button, Space } from "antd";
+import { Col, Table, Button, Space, message } from "antd";
 import HorizontalNavigation from "@/components/HorizontalNavigation";
 import MyLineChart from '@/components/Chart';
 import { FcAddDatabase, FcDeleteRow, FcEditImage, FcStatistics } from 'react-icons/fc';
@@ -9,7 +9,7 @@ import { GoDeviceCameraVideo } from 'react-icons/go';
 import { SiSpringsecurity } from 'react-icons/si';
 import { useRouter } from 'next/navigation';
 
-import { usingPoliceAPI, usingSecurityStaffAPI, usingIotDeviceAPI } from '@/apis';
+import { usingPoliceAPI, usingSecurityStaffAPI, usingIotDeviceAPI, usingAuthenticationAPI } from '@/apis';
 
 const items = [
   { label: 'Police', key: 'police', icon: <GiPoliceOfficerHead /> },
@@ -24,6 +24,20 @@ const Admin = () => {
   const [col, setCol] = useState<Array<{ title: string; dataIndex: string; key: string; }>>([]);
   const [statis, setStatis] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchAdminId = async () => {
+      try {
+        const response = await usingAuthenticationAPI.cookie();
+        const userData = response.data;
+        message.info(`Admin ID: ${userData.user_id}`);
+      } catch (error) {
+        console.error('Error fetching admin ID:', error);
+      }
+    };
+
+    fetchAdminId();
+  }, []);
 
   useEffect(() => {
     fetchData();

@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Row, Col, Space, message, Select} from 'antd';
+import { Button, Row, Col, Space, message, Select } from 'antd';
 import { CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { usingSecurityStaffAPI, usingPoliceAPI, usingIotDeviceAPI} from '@/apis';
+import { usingSecurityStaffAPI, usingPoliceAPI, usingIotDeviceAPI, usingAuthenticationAPI } from '@/apis';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const SecurityStaffDashboard = () => {
@@ -10,9 +10,10 @@ const SecurityStaffDashboard = () => {
     const [accepted, setAccepted] = useState(false);
     const [videoURL, setVideoURL] = useState(null);
     const [audio] = useState(new Audio('sound/alert.mp3'));
-    const videoRef = useRef(null)
+    const videoRef = useRef(null);
     const [policeList, setPoliceList] = useState<any[]>([]);
     const [iotDevices, setIotDevices] = useState<IoTDevice[]>([]);
+    const [selectedPolice, setSelectedPolice] = useState<string[]>([]);
 
     interface IoTDevice {
         id: string;
@@ -23,11 +24,27 @@ const SecurityStaffDashboard = () => {
         width: '100%',
         height: '100%',
     };
+
     const { Option } = Select;
     const center = {
         lat: 15.974684369487031,
         lng: 108.25214311410093,
-    };    
+    };
+
+    useEffect(() => {
+        const fetchAdminId = async () => {
+            try {
+                const response = await usingAuthenticationAPI.cookie();
+                const userData = response.data;
+                message.info(`ID: ${userData.user_id}`);
+            } catch (error) {
+                console.error('Error fetching ID:', error);
+            }
+        };
+
+        fetchAdminId();
+    }, []);
+
     useEffect(() => {
         let isMounted = true;
 
@@ -49,13 +66,10 @@ const SecurityStaffDashboard = () => {
                             message.error('Ohhh! There are some errors');
                         });
                 }
-
                 setTimeout(fetchViolenceStatus, 3000);
             }
         };
-
         fetchViolenceStatus();
-
         return () => {
             isMounted = false;
         };
@@ -94,10 +108,9 @@ const SecurityStaffDashboard = () => {
         const fetchIotDevices = async () => {
             try {
                 const response = await usingIotDeviceAPI.getList();
-                // const filteredDevices = response.data.filter((device: IoTDevice) => device.id === 'iot_0001');
-                // setIotDevices(filteredDevices);
-                console.log(response.data); 
-                setIotDevices(response.data);
+                const filteredDevices = response.data.filter((device: IoTDevice) => device.id === 'iot_0001');
+                setIotDevices(filteredDevices);
+                console.log(response.data);
             } catch (error) {
                 console.error("Error fetching IoT devices:", error);
             }
@@ -130,20 +143,49 @@ const SecurityStaffDashboard = () => {
                 console.log(e);
             });
     };
-    
+
+    const handleAssignTask = () => {
+        if (selectedPolice.length === 0) {
+            message.warning('Please select at least one police officer.');
+            return;
+        }
+
+        if (iotDevices.length === 0) {
+            message.warning('No IoT devices available.');
+            return;
+        }
+        const [lat, lng] = iotDevices[0].geolocation.split(';').map(Number);
+        const taskData = {
+            location: { lat, lng },
+            police: selectedPolice
+        };
+        usingSecurityStaffAPI.assignTask(taskData)
+            .then(() => {
+                message.success('Task assigned successfully.');
+                const police_id = policeList
+                    .filter(police => selectedPolice.includes(police.id))
+                    .map(police => police.id)
+                    .join(', ');
+                message.info(`Task assigned to: ${police_id} at location (Lat: ${lat}, Lng: ${lng})`);
+            })
+            .catch((e: any) => {
+                console.error(e);
+                message.error('Error assigning task.');
+            });
+    };
+
     return (
         <div className="p-5">
             {detected ? (
-                accepted ? (
+                !accepted ? (
                     <>
                         <Row gutter={[16, 16]}>
-                            <Col span={18}>
-                                <div className="border border-gray-800 w-[1200px] h-[880px] flex justify-center items-center">
-                                    <LoadScript googleMapsApiKey={process.env.NEXT_PULBIC_KEY_GOOGLE_MAP}>
-                                        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={18} center={center} options={{mapTypeId: 'hybrid'}}>
+                            <Col span={18} className="flex justify-center">
+                                <div className="border border-gray-800 rounded-lg shadow-lg w-[1200px] h-[880px] flex justify-center items-center overflow-hidden">
+                                    <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_KEY_GOOGLE_MAP}>
+                                        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={18} center={center} options={{ mapTypeId: 'hybrid' }}>
                                             {iotDevices.map(device => {
                                                 const [lat, lng] = device.geolocation.split(';').map(Number);
-                                                // message.info(`Latitude: ${lat}, Longitude: ${lng}`);
                                                 return (
                                                     <Marker
                                                         key={device.id}
@@ -155,17 +197,30 @@ const SecurityStaffDashboard = () => {
                                     </LoadScript>
                                 </div>
                             </Col>
-                            <Col span={6}>
-                                <div className="p-24 pt-24">
-                                    <Space direction="vertical" className="w-full max-w-xs pt-24">
-                                        <Button className="mb-5 text-2xl bg-green-400" type="primary" block>Lưu video</Button>
-                                        <Button className="mb-5 text-2xl" type="primary" block>Tắt chuông</Button>
-                                        <Select mode="multiple" className="w-[200px] text-xl" placeholder="Chọn police">
+                            <Col span={6} className='flex justify-center items-center'>
+                                <div className="p-12 w-full max-w-xs bg-slate-600 rounded-lg shadow-lg">
+                                    <Space direction="vertical" className="w-full max-w-xs h-auto">
+                                        <Button className="mb-4 text-lg bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 rounded-lg" type="primary" block>Lưu video</Button>
+                                        <Button className="mb-4 text-lg bg-red-600 text-white hover:bg-red-700 transition-colors duration-300 rounded-lg" type="primary" block onClick={stopAlert}>Tắt chuông</Button>
+                                        <Select
+                                            mode="multiple"
+                                            className="w-full h-12 mb-4 text-lg rounded-lg border-gray-300"
+                                            placeholder="Chọn police"
+                                            value={selectedPolice}
+                                            onChange={(value) => setSelectedPolice(value)}
+                                        >
                                             {policeList.map(police => (
-                                                <Option key={police.id} value={police.id}>{police.name}</Option>
+                                                <Option key={police.id} value={police.id}>{police.full_name}</Option>
                                             ))}
                                         </Select>
-                                        <Button className="mb-5 text-2xl" type="primary" block>Giao Nhiệm Vụ</Button>
+                                        <Button
+                                            className="text-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 rounded-lg"
+                                            type="primary"
+                                            block
+                                            onClick={handleAssignTask}
+                                        >
+                                            Giao Nhiệm Vụ
+                                        </Button>
                                     </Space>
                                 </div>
                             </Col>
@@ -173,21 +228,19 @@ const SecurityStaffDashboard = () => {
                     </>
                 ) : (
                     <div>
-                        <div className="border border-gray-300 w-[1200px] h-[800px] flex justify-center items-center">
+                        <div className="border border-gray-300 rounded-lg shadow-lg w-[1200px] h-[800px] flex justify-center items-center overflow-hidden">
                             {videoURL == null ? (
-                                <p>LOADING VIDEO</p>
+                                <p className="text-gray-500">LOADING VIDEO</p>
                             ) : (
-                                <video controls className="w-full h-full">
+                                <video controls className="w-full h-full rounded-lg shadow-md">
                                     <source src={videoURL} />
                                 </video>
                             )}
                         </div>
-
-                        <div className="mt-6 flex items-center justify-center">
-                            <Space>
-                                <Button className="text-2xl" type="primary" icon={<CheckCircleOutlined />} onClick={handleAccept}>Accept</Button>
-                                <Button className="text-2xl" type="default" icon={<CloseCircleOutlined />} onClick={handleCancel}>Cancel</Button>
-                            </Space>
+    
+                        <div className="mt-6 flex items-center justify-center space-x-4">
+                            <Button className="text-lg bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 rounded-lg" type="primary" icon={<CheckCircleOutlined />} onClick={handleAccept}>Accept</Button>
+                            <Button className="text-lg bg-red-600 text-white hover:bg-red-700 transition-colors duration-300 rounded-lg" type="default" icon={<CloseCircleOutlined />} onClick={handleCancel}>Cancel</Button>
                         </div>
                     </div>
                 )
@@ -197,7 +250,6 @@ const SecurityStaffDashboard = () => {
                 </div>
             )}
         </div>
-    );
-};
-
+    )
+}
 export default SecurityStaffDashboard;
