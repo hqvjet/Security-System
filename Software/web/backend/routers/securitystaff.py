@@ -135,10 +135,6 @@ def assign_tasks(taskData: dict, db: Session = Depends(get_db)):
     
     if not location or not police_ids:
         raise HTTPException(status_code=400, detail="Invalid task data")
-
-    lat = location.get('lat')
-    lng = location.get('lng')
-
     assigned_police = db.query(Police).filter(Police.id.in_(police_ids)).all()
 
     if not assigned_police:

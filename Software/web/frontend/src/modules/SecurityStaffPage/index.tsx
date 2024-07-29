@@ -177,7 +177,7 @@ const SecurityStaffDashboard = () => {
     return (
         <div className="p-5">
             {detected ? (
-                !accepted ? (
+                accepted ? (
                     <>
                         <Row gutter={[16, 16]}>
                             <Col span={18} className="flex justify-center">
