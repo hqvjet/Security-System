@@ -4,10 +4,11 @@ from uuid import UUID
 from datetime import datetime
 
 class MissionBase(BaseModel):
-    security_staff_id: str
+    id: UUID
     iot_device_id: str
-    location: Json
+    security_staff_id: str
     assigned_police_ids: List[str]
+    location: Json
     state: str
 
 class MissionCreate(MissionBase):

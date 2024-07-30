@@ -7,13 +7,13 @@ export const usingAdminAPI = {
     getUsername: (adminId: string) => {
         return ADMIN_API.get(`/get-username/${adminId}`);
     },
-    getList: () => {
-        return ADMIN_API.get('/get_list');
-    },
     getMission: (missionId: string) => {
         return ADMIN_API.get(`/get_mission/${missionId}`);
     },
-    deleteMission: (missionId: string) => {
+    delete: (missionId: string) => {
         return ADMIN_API.delete(`/delete_mission/${missionId}`);
+    },
+    getList: () => {
+        return ADMIN_API.get('/get_all_missions');
     }
 };

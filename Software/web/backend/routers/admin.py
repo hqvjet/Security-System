@@ -127,8 +127,11 @@ def delete_mission(mission_id: UUID, db: Session = Depends(get_db)):
     mission = db.query(Mission).filter(Mission.id == mission_id).first()
     if not mission:
         raise HTTPException(status_code=404, detail="Mission not found")
-
     db.delete(mission)
     db.commit()
-    
     return {"message": "Mission deleted successfully"}
+
+@router.get("/get_all_missions", response_model=List[MissionSchemas])
+def get_all_missions(db: Session = Depends(get_db)):
+    missions = db.query(Mission).all()
+    return missions

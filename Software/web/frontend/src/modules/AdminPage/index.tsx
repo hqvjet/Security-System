@@ -8,13 +8,15 @@ import { GiPoliceOfficerHead } from 'react-icons/gi';
 import { GoDeviceCameraVideo } from 'react-icons/go';
 import { SiSpringsecurity } from 'react-icons/si';
 import { useRouter } from 'next/navigation';
+import moment from 'moment';
 
-import { usingPoliceAPI, usingSecurityStaffAPI, usingIotDeviceAPI, usingAuthenticationAPI } from '@/apis';
+import { usingPoliceAPI, usingSecurityStaffAPI, usingIotDeviceAPI, usingAdminAPI, usingAuthenticationAPI } from '@/apis';
 
 const items = [
   { label: 'Police', key: 'police', icon: <GiPoliceOfficerHead /> },
   { label: 'Security Staff', key: 'security', icon: <SiSpringsecurity /> },
   { label: 'IoT Device', key: 'iot', icon: <GoDeviceCameraVideo /> },
+  { label: 'Missions', key: 'missions', icon: <FcStatistics /> },
   { label: 'Statistic', key: 'statistic', icon: <FcStatistics />, },
 ];
 
@@ -56,6 +58,9 @@ const Admin = () => {
         case 'iot':
           api = usingIotDeviceAPI;
           break;
+        case 'missions':
+          api = usingAdminAPI;
+          break;
         default:
           return;
       }
@@ -73,6 +78,15 @@ const Admin = () => {
               if (typeof text === 'boolean') {
                 return text ? 'On' : 'Off';
               }
+              if (key === 'location') {
+                return `Lat: ${text.lat}, Lng: ${text.lng}`;
+              }
+              if (key === 'assigned_police_ids') {
+                return text.join(', ');
+              }
+              if (key === 'created_at' || key === 'updated_at') {
+                return moment(text).format('YYYY-MM-DD HH:mm:ss');
+              }
               return text;
             },
           };
@@ -82,17 +96,17 @@ const Admin = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };  
-  
+  };
+
   const onClick = (e: { key: React.SetStateAction<string>; }) => {
     setCurrent(e.key);
     setStatis(e.key === 'statistic');
   };
-  
+
   const handleAddStaff = () => {
     router.push('/admin/add-staff');
   };
-  
+
   const handleAddIotDevice = () => {
     router.push('/admin/add-iot-device');
   };
@@ -116,11 +130,14 @@ const Admin = () => {
         case 'iot':
           api = usingIotDeviceAPI;
           break;
+        case 'missions':
+          api = usingAdminAPI;
+          break;
         default:
           console.error('Invalid current type:', current);
           return;
       }
-  
+
       api.delete(id)
         .then(() => {
           setData(data.filter((item: { [key: string]: any }) => item.id !== id));
@@ -129,6 +146,10 @@ const Admin = () => {
           console.error('Error deleting record:', error);
         });
     }
+  };
+
+  const handleComplete = (record: { [key: string]: any }) => {
+    console.log('Completing mission:', record);
   };
 
   return (
@@ -148,7 +169,12 @@ const Admin = () => {
               key: 'operation',
               render: (record) => (
                 <Space className='flex justify-end'>
+                  {current !== 'missions' && (
                   <Button type="primary" icon={<FcEditImage/>} onClick={() => handleEdit(record)}>Edit</Button>
+                  )}
+                  {current === 'missions' && record.state !== 'Completed' && (
+                    <Button type="primary" onClick={() => handleComplete(record)}>Complete</Button>
+                  )}
                   <Button type="primary" icon={<FcDeleteRow/>} danger onClick={() => handleDelete(record)}>Delete</Button>
                 </Space>
               ),
