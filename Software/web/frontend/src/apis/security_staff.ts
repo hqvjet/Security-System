@@ -28,7 +28,4 @@ export const usingSecurityStaffAPI = {
     assignmission: (missionData: { location: { lat: number, lng: number }, police: string[] }) => {
         return SECURITY_STAFF_API.post('/assign_missions', missionData);
     },
-    createMission: (missionData: { [key: string]: any }) => {
-        return SECURITY_STAFF_API.post('/create_mission', missionData);
-    }
 };
