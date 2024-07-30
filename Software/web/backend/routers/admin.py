@@ -1,16 +1,23 @@
 from datetime import datetime
 from typing import List, Union
+from uuid import UUID
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from passlib.hash import bcrypt
+
 from db import SessionLocal
 from models.admin import Admin
 from models.police import Police
-from schemas.police import PoliceCreate
 from models.securitystaff import SecurityStaff
-from schemas.securitystaff import SecurityStaffCreate
+from models.mission import Mission
+
 from schemas.admin import AdminSchema
-from passlib.hash import bcrypt
-import logging
+from schemas.police import PoliceCreate
+from schemas.securitystaff import SecurityStaffCreate
+from schemas.mission import Mission as MissionSchemas
+
 
 router = APIRouter(
     prefix='/api/v1/admin',
@@ -107,3 +114,21 @@ def add_security(securitystaff_data: SecurityStaffCreate, db: Session, joined_ti
     except Exception as e:
         logging.error(f"An error occurred while adding police: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
+    
+@router.get("/get_mission/{mission_id}", response_model=MissionSchemas)
+def get_mission(mission_id: UUID, db: Session = Depends(get_db)):
+    mission = db.query(Mission).filter(Mission.id == mission_id).first()
+    if not mission:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    return mission
+
+@router.delete("/delete_mission/{mission_id}", response_model=dict)
+def delete_mission(mission_id: UUID, db: Session = Depends(get_db)):
+    mission = db.query(Mission).filter(Mission.id == mission_id).first()
+    if not mission:
+        raise HTTPException(status_code=404, detail="Mission not found")
+
+    db.delete(mission)
+    db.commit()
+    
+    return {"message": "Mission deleted successfully"}

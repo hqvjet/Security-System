@@ -1,9 +1,10 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+
 from db import SessionLocal
 from models.iotdevice import IoTDevice
-from schemas.iotdevice import IoTDeviceCreate, IoTDevice as IoTDeviceSchema
+from schemas.iotdevice import IoTDevice as IoTDeviceSchema, IoTDeviceCreate
 
 router = APIRouter(
     prefix='/api/v1/iot',

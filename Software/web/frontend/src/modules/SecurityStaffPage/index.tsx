@@ -14,6 +14,7 @@ const SecurityStaffDashboard = () => {
     const [policeList, setPoliceList] = useState<any[]>([]);
     const [iotDevices, setIotDevices] = useState<IoTDevice[]>([]);
     const [selectedPolice, setSelectedPolice] = useState<string[]>([]);
+    const [securityStaffId, setSecurityStaffId] = useState<string>('');
 
     interface IoTDevice {
         id: string;
@@ -36,6 +37,7 @@ const SecurityStaffDashboard = () => {
             try {
                 const response = await usingAuthenticationAPI.cookie();
                 const userData = response.data;
+                setSecurityStaffId(userData.user_id);
                 message.info(`ID: ${userData.user_id}`);
             } catch (error) {
                 console.error('Error fetching ID:', error);
@@ -144,7 +146,7 @@ const SecurityStaffDashboard = () => {
             });
     };
 
-    const handleAssignTask = () => {
+    const handleAssignmission = () => {
         if (selectedPolice.length === 0) {
             message.warning('Please select at least one police officer.');
             return;
@@ -155,22 +157,24 @@ const SecurityStaffDashboard = () => {
             return;
         }
         const [lat, lng] = iotDevices[0].geolocation.split(';').map(Number);
-        const taskData = {
+        const missionData = {
             location: { lat, lng },
-            police: selectedPolice
+            police: selectedPolice,
+            security_staff_id: securityStaffId,
+            iot_device_id: iotDevices[0].id  
         };
-        usingSecurityStaffAPI.assignTask(taskData)
+        usingSecurityStaffAPI.assignmission(missionData)
             .then(() => {
-                message.success('Task assigned successfully.');
+                message.success('mission assigned successfully.');
                 const police_id = policeList
                     .filter(police => selectedPolice.includes(police.id))
                     .map(police => police.id)
                     .join(', ');
-                message.info(`Task assigned to: ${police_id} at location (Lat: ${lat}, Lng: ${lng})`);
+                message.info(`mission assigned to: ${police_id} at location (Lat: ${lat}, Lng: ${lng} of IoT Device ${iotDevices[0].id} by ${securityStaffId})`);
             })
             .catch((e: any) => {
                 console.error(e);
-                message.error('Error assigning task.');
+                message.error('Error assigning mission.');
             });
     };
 
@@ -217,7 +221,7 @@ const SecurityStaffDashboard = () => {
                                             className="text-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 rounded-lg"
                                             type="primary"
                                             block
-                                            onClick={handleAssignTask}
+                                            onClick={handleAssignmission}
                                         >
                                             Giao Nhiệm Vụ
                                         </Button>

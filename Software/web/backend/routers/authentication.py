@@ -1,16 +1,19 @@
 import uuid
+import logging
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+from passlib.hash import bcrypt
+from jose import JWTError, jwt
+
 from db import SessionLocal
 from models.admin import Admin
 from models.police import Police
 from models.securitystaff import SecurityStaff
 from schemas.admin import AdminCreate, Login
-from passlib.hash import bcrypt
-from passlib.context import CryptContext
-from jose import JWTError, jwt
-from datetime import datetime, timedelta
-import logging
+
 
 router = APIRouter(
     prefix='/api/v1/authentication',
@@ -46,7 +49,6 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
 
 @router.post("/register-admin")
 def register_admin_user(admin_data: AdminCreate, db: Session = Depends(get_db)):

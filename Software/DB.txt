@@ -62,3 +62,13 @@ CREATE TABLE Video (
     iot_id VARCHAR(50) REFERENCES IoT_Device(ID)
 );
 
+CREATE TABLE Mission (
+    ID UUID PRIMARY KEY,
+    security_staff_id VARCHAR(50) REFERENCES Security_Staff(ID),
+    iot_device_id VARCHAR(50) REFERENCES IoT_Device(ID),
+    location VARCHAR(255) NOT NULL,
+    assigned_police_ids VARCHAR(50)[] NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

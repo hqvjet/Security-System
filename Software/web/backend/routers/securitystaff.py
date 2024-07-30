@@ -1,18 +1,19 @@
-import time
-from datetime import date
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
-from fastapi.responses import StreamingResponse, FileResponse
-from sqlalchemy.orm import Session
-from typing import List
-import shutil
 from io import BytesIO
 import os
+import shutil
 import ffmpeg
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
+from sqlalchemy.orm import Session
+from typing import Dict, List
+
 from db import SessionLocal
-from passlib.context import CryptContext
 from models.securitystaff import SecurityStaff
 from models.police import Police
-from schemas.securitystaff import Login, SecurityStaffCreate, SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
+from models.mission import Mission
+from schemas.securitystaff import SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
+from schemas.mission import MissionCreate, Mission as MissionSchemas
 
 router = APIRouter(
     prefix='/api/v1/security_staff',
@@ -29,8 +30,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @router.get("/get_list", response_model=List[SecurityStaffSchema])
 def get_security_staff_list(db: Session = Depends(get_db)):
@@ -128,16 +127,27 @@ def deny_violence():
 # def accept_violence():
 #     pass
 
-@router.post('/assign_tasks')
-def assign_tasks(taskData: dict, db: Session = Depends(get_db)):
-    location = taskData.get('location')
-    police_ids = taskData.get('police')
+@router.post('/assign_missions', response_model=MissionSchemas)
+def assign_missions(missionData: Dict, db: Session = Depends(get_db)):
+    location = missionData.get('location')
+    police_ids = missionData.get('police')
+    security_staff_id = missionData.get('security_staff_id')
+    iot_device_id = missionData.get('iot_device_id')
     
-    if not location or not police_ids:
-        raise HTTPException(status_code=400, detail="Invalid task data")
+    if not location or not police_ids or not security_staff_id or not iot_device_id:
+        raise HTTPException(status_code=400, detail="Invalid mission data")
     assigned_police = db.query(Police).filter(Police.id.in_(police_ids)).all()
-
     if not assigned_police:
         raise HTTPException(status_code=404, detail="Police not found")
-
-    return {"message": "Task assigned successfully"}
+    new_mission = Mission(
+        security_staff_id=security_staff_id,
+        iot_device_id=iot_device_id,
+        location=location,
+        assigned_police_ids=police_ids,
+        state="Assigned"
+    )
+    db.add(new_mission)
+    db.commit()
+    db.refresh(new_mission)
+    
+    return new_mission
