@@ -64,7 +64,6 @@ def update_police(police_id: str, police_data: PoliceUpdate, db: Session = Depen
 
 @router.get("/missions/assigned/{police_id}", response_model=List[MissionSchemas])
 def get_assigned_missions(police_id: str, db: Session = Depends(get_db)):
-    # Sử dụng func.any để kiểm tra xem police_id có nằm trong assigned_police_ids không
     missions = db.query(Mission).filter(Mission.assigned_police_ids.any(police_id), Mission.state == 'Assigned').all()
     if not missions:
         raise HTTPException(status_code=404, detail="No assigned missions found")
