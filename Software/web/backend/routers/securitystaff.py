@@ -13,7 +13,7 @@ from models.securitystaff import SecurityStaff
 from models.police import Police
 from models.mission import Mission
 from schemas.securitystaff import SecurityStaff as SecurityStaffSchema, SecurityStaffUpdate
-from schemas.mission import MissionCreate, Mission as MissionSchemas
+from schemas.mission import Mission as MissionSchemas
 
 router = APIRouter(
     prefix='/api/v1/security_staff',

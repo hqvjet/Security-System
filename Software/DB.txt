@@ -22,6 +22,7 @@ CREATE TABLE Police (
     email VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
+    geolocation VARCHAR(100),
     description TEXT,
     role VARCHAR(50) NOT NULL,
     CCCD VARCHAR(20) NOT NULL,

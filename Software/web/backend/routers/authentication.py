@@ -168,5 +168,5 @@ def get_me(request: Request, db: Session = Depends(get_db)):
 
 @router.post('/logout')
 def logout(response: Response):
-    response.delete_cookie('access_token')
+    response.delete_cookie('access_token', path='/', domain=None)
     return {"message": "Logged out successfully"}
