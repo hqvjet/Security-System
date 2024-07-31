@@ -1,3 +1,4 @@
+import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -48,6 +49,9 @@ def update_police(police_id: str, police_data: PoliceUpdate, db: Session = Depen
     if not police:
         raise HTTPException(status_code=404, detail="Police not found")
     update_data = police_data.dict(exclude_unset=True)
+    if 'password' in update_data:
+        hashed_password = bcrypt.hashpw(update_data['password'].encode('utf-8'), bcrypt.gensalt())
+        update_data['password'] = hashed_password.decode('utf-8')
     if 'joined' in update_data:
         update_data.pop('joined')
     for key, value in update_data.items():

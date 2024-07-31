@@ -1,6 +1,7 @@
 from io import BytesIO
 import os
 import shutil
+import bcrypt
 import ffmpeg
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
@@ -58,14 +59,14 @@ def update_security(security_id: str, security_staff_data: SecurityStaffUpdate, 
     security_staff = db.query(SecurityStaff).filter(SecurityStaff.id == security_id).first()
     if not security_staff:
         raise HTTPException(status_code=404, detail="Security staff not found")
-
     update_data = security_staff_data.dict(exclude_unset=True)
+    if 'password' in update_data:
+        hashed_password = bcrypt.hashpw(update_data['password'].encode('utf-8'), bcrypt.gensalt())
+        update_data['password'] = hashed_password.decode('utf-8')
     if 'joined' in update_data:
         update_data.pop('joined')
-    
     for key, value in update_data.items():
         setattr(security_staff, key, value)
-
     db.commit()
     db.refresh(security_staff)
     return security_staff

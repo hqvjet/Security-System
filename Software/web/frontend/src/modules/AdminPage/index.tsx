@@ -78,7 +78,7 @@ const Admin = () => {
               if (typeof text === 'boolean') {
                 return text ? 'On' : 'Off';
               }
-              if (key === 'location') {
+              if (key === 'location' || key === 'geolocation') {
                 return `Lat: ${text.lat}, Lng: ${text.lng}`;
               }
               if (key === 'assigned_police_ids') {
@@ -113,8 +113,13 @@ const Admin = () => {
 
   const handleEdit = (record: { [key: string]: any }) => {
     const type = current;
-    router.push(`/admin/edit-staff?id=${record.id}&type=${type}`);
+    if (type === 'iot') {
+      router.push(`/admin/edit-iot?id=${record.id}`);
+    } else {
+      router.push(`/admin/edit-staff?id=${record.id}&type=${type}`);
+    }
   };
+  
 
   const handleDelete = (record: { [key: string]: any }) => {
     const { id } = record;

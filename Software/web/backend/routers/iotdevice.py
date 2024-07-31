@@ -30,14 +30,13 @@ def get_device(device_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Device not found")
     return device
 
-@router.post("/create")
+@router.post("/create", response_model=IoTDeviceSchema)
 def create_device(device_data: IoTDeviceCreate, db: Session = Depends(get_db)):
     try:
         db_device = IoTDevice(**device_data.dict())
         db.add(db_device)
         db.commit()
         db.refresh(db_device)
-        
         return db_device
     except Exception as e:
         print(e)

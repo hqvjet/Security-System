@@ -53,8 +53,7 @@ CREATE TABLE Security_Staff (
 CREATE TABLE IoT_Device (
     ID VARCHAR(50) PRIMARY KEY,
     power BOOLEAN NOT NULL,
-    geolocation VARCHAR(50) NOT NULL,
-    username_admin VARCHAR(50) REFERENCES Admin(username)
+    geolocation VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Video (

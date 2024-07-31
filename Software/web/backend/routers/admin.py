@@ -43,7 +43,7 @@ def get_admin_username(admin_id: str, db: Session = Depends(get_db)):
     admin = db.query(Admin).filter(Admin.id == admin_id).first()
     if not admin:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Admin not found")
-    return admin
+    return {"username": admin.username}
 
 @router.post("/add-staff")
 def add_staff(admin_data: Union[PoliceCreate, SecurityStaffCreate], db: Session = Depends(get_db)):

@@ -8,6 +8,5 @@ class IoTDevice(Base):
     id = Column(String(50), primary_key=True, index=True)
     power = Column(Boolean, nullable=False)
     geolocation = Column(String(50), nullable=False)
-    username_admin = Column(String(50), nullable=False)
     
     missions = relationship('Mission', back_populates='iot_device')
