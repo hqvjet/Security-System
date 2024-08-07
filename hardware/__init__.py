@@ -1,114 +1,102 @@
-import sys
 import cv2
-import time
+import numpy as np
+import requests
+from dotenv import load_dotenv
 from constants import *
 import os
 from collections import deque
-from picamera import PiCamera
-from picamera.array import PiRGBArray
-import requests
-from dotenv import load_dotenv
-import numpy as np
-import threading
+from picamera2 import Picamera2
+from picamera2.encoders import H264Encoder
+from picamera2.outputs import FfmpegOutput, FileOutput
+import time
 
+# Load environment variables
 load_dotenv()
 AI_API_URL = os.getenv('AI_API_URL')
 SERVER_API_URL = os.getenv('SERVER_API_URL')
 
-camera = PiCamera()
-camera.resolution = SCREEN_RESOLUTION
-camera.framerate = FRAME_RATE * 5
-rawCapture = PiRGBArray(camera, size=SCREEN_RESOLUTION)
+# Initialize camera
+picam2 = Picamera2()
+video_config = picam2.create_video_configuration(main={"size": SCREEN_RESOLUTION, "format": "RGB888"})
+picam2.configure(video_config)
+picam2.set_controls({"FrameRate": 30})
 
-frames_deque = deque() 
-lost_deque = deque()
+# Data structures for frames
+frames_deque = deque()
 lock = False
-recording = False
 count = 0
 
-def videoToFrames(video_path):
-    video = cv2.VideoCapture(video_path)
-
-    if not video.isOpened():
-        print('Video Error')
-
-    frame_interval = 1
-    frame_rate = int(video.get(cv2.CAP_PROP_FPS))
-    num_frames_to_capture = frame_rate * frame_interval
-    output_folder = 'resources/frames'
+def start_recording():
+    vid_out = PATH + VIDEOS + f'violence_{time.strftime("%Y%m%d-%H%M%S")}.mp4'
+    encoder = H264Encoder()
+    output = FileOutput(vid_out)
     
-    frame_count = 0
-
-def startRecording():
-    global recording
+    picam2.stop()
+    picam2.start_and_record_video(output, duration=10)
+    print('Recording started')
+    time.sleep(10)  # Wait for recording to complete
+    picam2.stop_recording()
+    print('Recording stopped')
     
-    recording = True
-    camera.start_recording(PATH + VIDEOS + 'violence.h264')
-    camera.wait_recording(10)
-    camera.stop_recording()
-    recording = False
+    # Restart the camera for normal operation
+    picam2.start()
 
-def makeRequest(frames):
-    global lock
-    global frames_deque
-    frames_string = np.array(frames).tobytes()
-    print('requesting...')
-    response = requests.post(AI_API_URL + '/predict', data=frames_string)
-    print('done')
+def make_request(frames):
+    # Convert list of frames to bytes
+    # temp = np.array(frames)
+    # print(temp.shape)
 
-    frames_deque = deque()
-    lock = False
-
-    if response.status_code == 200:
-        data = response.json()
-        print(data)
-        predict = data['prediction'][0]
+    frames_bytes = b''.join([np.array(frame).tobytes() for frame in frames])
+    print('Requesting...')
+    try:
+        response = requests.post(AI_API_URL, data=frames_bytes, timeout=10)
+        print('Request completed')
         
-        if predict[0] >= predict[1]:
-            print('NO VIOLENCE')
+        if response.status_code == 200:
+            data = response.json()
+            print(data)
+            predict = data['prediction'][0]
+            
+            if predict[0] >= predict[1]:
+                print('NO VIOLENCE')
+            else:
+                print('VIOLENCE DETECTED')
+                start_recording()
         else:
-            print('VIOLENCE DETECTED')
-            threading.Thread(target=startRecording).start()
+            print('ERROR OCCURRED WHILE POSTING')
+    except requests.exceptions.RequestException as e:
+        print(f'REQUEST ERROR: {e}')
+    
 
-    else:
-        print('ERROR OCCURED WHILE POSTING')
+if __name__ == "__main__":
+    picam2.start()
+    
+    try:
+        while True:
+            # Capture image from camera
+            image = picam2.capture_array()
+            image = cv2.resize(image, (500, 500))
+            
+            # Display the camera feed
+            cv2.imshow('Camera', image)
+            
+            if count % 45 == 0:
+                count = 0
+                print(f'Frames: {len(frames_deque)}')
+                
+                if len(frames_deque) == 8:
+                    # threading.Thread(target=make_request, args=(list(frames_deque),)).start()
+                    make_request(list(frames_deque))
+                    frames_deque = deque()
+            
+                frames_deque.append(image)
 
-for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
-    image = frame.array
-
-    cv2.imshow('Camera', image)
-    if count % 5 == 0:
-        count = 0
-        print('cap')
-        vector = image.reshape((image.shape[0], image.shape[1], 3))
-
-        print('lock', lock)
-        print('recording', recording)
-        print('frames', len(frames_deque))
-        print('lost', len(lost_deque))
-
-        if not lock and not recording:
-
-            # Check lost_deque
-            if len(lost_deque) != 0:
-                if len(lost_deque) <= 8:
-                    frames_deque = deque(lost_deque)
-                    lost_deque = deque()
-                else:
-                    frames_deque = deque(lost_deque[0:8])
-                    lost_deque = deque(lost_deque[8:])
-
-            if len(frames_deque) >= 8:
-                threading.Thread(target=makeRequest, args=(frames_deque,)).start()
-                lock = True
-
-            frames_deque.append(vector)
-        elif lock:
-            lost_deque.append(vector)
-    count += 1
-    if cv2.waitKey(1) and 0xFF == ord('q'):
-        break
-
-    rawCapture.truncate(0)
-
-cv2.destroyAllWindows()
+            
+            count += 1
+            
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+    
+    finally:
+        cv2.destroyAllWindows()
+        picam2.stop()
