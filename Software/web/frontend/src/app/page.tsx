@@ -10,7 +10,7 @@ export default function Home() {
         </p>
         <Row justify="center">
           <Col>
-            <a href="/admin">
+            <a href="/login">
               <button style={{ padding: '10px 20px', fontSize: '1.2rem', backgroundColor: '#1890ff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
                 Tìm hiểu thêm
               </button>

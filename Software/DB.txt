@@ -1,5 +1,5 @@
 CREATE TABLE admin (
-    id UUID PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
@@ -13,18 +13,19 @@ CREATE TABLE admin (
     avatar VARCHAR(255)
 );
 
-CREATE TABLE Police (
-    ID VARCHAR(50) PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
+CREATE TABLE police (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    age INT NOT NULL,
+    age INTEGER NOT NULL,
     email VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
+    geolocation VARCHAR(100),
     description TEXT,
     role VARCHAR(50) NOT NULL,
-    CCCD VARCHAR(20) NOT NULL,
+    cccd VARCHAR(20) NOT NULL,
     avatar VARCHAR(255),
     certification VARCHAR(255) NOT NULL,
     work_history VARCHAR(255) NOT NULL,
@@ -32,33 +33,42 @@ CREATE TABLE Police (
     work_at VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE Security_Staff (
-    ID VARCHAR(50) PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
+CREATE TABLE security_staff (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    age INT NOT NULL,
+    age INTEGER NOT NULL,
     email VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     description TEXT,
     role VARCHAR(50) NOT NULL,
-    CCCD VARCHAR(20) NOT NULL,
+    cccd VARCHAR(20) NOT NULL,
     avatar VARCHAR(255),
     joined DATE NOT NULL,
     work_at VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IoT_Device (
-    ID VARCHAR(50) PRIMARY KEY,
+CREATE TABLE iot_device (
+    id SERIAL PRIMARY KEY,
     power BOOLEAN NOT NULL,
-    geolocation VARCHAR(50) NOT NULL,
-    username_admin VARCHAR(50) REFERENCES Admin(username)
+    geolocation VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Video (
-    ID VARCHAR(50) PRIMARY KEY,
+CREATE TABLE video (
+    id SERIAL PRIMARY KEY,
     created_at DATE NOT NULL,
-    iot_id VARCHAR(50) REFERENCES IoT_Device(ID)
+    iot_id INTEGER REFERENCES iot_device(id) ON DELETE CASCADE
 );
 
+CREATE TABLE mission (
+    id SERIAL PRIMARY KEY,
+    security_staff_id INTEGER REFERENCES security_staff(id) ON DELETE CASCADE,
+    iot_device_id INTEGER REFERENCES iot_device(id) ON DELETE CASCADE,
+    location VARCHAR(255) NOT NULL,
+    assigned_police_ids INTEGER[] NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
