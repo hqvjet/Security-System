@@ -1,30 +1,14 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { usingAdminAPI } from '@/apis/admin';
 import { usingIotDeviceAPI } from '@/apis';
 
 const EditIoTDeviceForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [adminUsernames, setAdminUsernames] = useState<string[]>([]);
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    const fetchAdminUsernames = async () => {
-      try {
-        const response = await usingAdminAPI.get_list();
-        setAdminUsernames(response.data);
-      } catch (error) {
-        console.error('Error fetching admin usernames:', error);
-        message.error('Failed to fetch admin usernames');
-      }
-    };
-
-    fetchAdminUsernames();
-  }, []);
 
   useEffect(() => {
     const fetchDeviceData = async () => {
@@ -46,16 +30,23 @@ const EditIoTDeviceForm = () => {
   }, [searchParams, form]);
 
   const onFinish = async (values: { [key: string]: any }) => {
+    const deviceId = searchParams.get('id');
+
+    if (!deviceId) {
+      message.error('Device ID is required');
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await usingIotDeviceAPI.create(values);
-      message.success('IoT Device added successfully!');
-      console.log('IoT Device added successfully:', response.data);
+      const response = await usingIotDeviceAPI.update(deviceId, values);
+      message.success('IoT Device updated successfully!');
+      console.log('IoT Device updated successfully:', response.data);
       setLoading(false);
       router.push('/admin');
     } catch (error) {
-      console.error('Error adding IoT Device:', error);
-      message.error('Failed to add IoT Device');
+      console.error('Error updating IoT Device:', error);
+      message.error('Failed to update IoT Device');
       setLoading(false);
     }
   };
@@ -67,8 +58,8 @@ const EditIoTDeviceForm = () => {
   return (
     <div>
       <Form
-        form={form} 
-        name="addIotDevice"
+        form={form}
+        name="editIotDevice"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
@@ -76,14 +67,6 @@ const EditIoTDeviceForm = () => {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item
-          label="ID"
-          name="id"
-          rules={[{ required: true, message: 'Please input ID!' }]}
-        >
-          <Input disabled={true} />
-        </Form.Item>
-
         <Form.Item
           label="Power"
           name="power"
@@ -103,26 +86,12 @@ const EditIoTDeviceForm = () => {
           <Input.TextArea autoSize={{ minRows: 2 }} placeholder="Latitude; Longitude" />
         </Form.Item>
 
-        <Form.Item
-          label="Admin ID"
-          name="username_admin"
-          rules={[{ required: true, message: 'Please select an admin!' }]}
-        >
-          <Select>
-            {adminUsernames.map(username => (
-              <Select.Option key={username} value={username}>
-                {username}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit" loading={loading}>
             Save IoT Device
           </Button>
         </Form.Item>
-      </Form>
+      </Form> 
     </div>
   );
 };

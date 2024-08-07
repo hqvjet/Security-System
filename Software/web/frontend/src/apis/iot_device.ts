@@ -4,6 +4,9 @@ export const usingIotDeviceAPI = {
     getList: () => {
         return IOT_API.get('/get_list');
     },
+    create: (deviceData: { [key: string]: any }) => {
+        return IOT_API.post('/create', deviceData);
+    },
     get: (deviceId: string) => {
         return IOT_API.get(`/get/${deviceId}`);
     },

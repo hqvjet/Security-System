@@ -4,7 +4,7 @@ from db import Base
 class Police(Base):
     __tablename__ = 'police'
 
-    id = Column(String(50), primary_key=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(100), nullable=False)
     password = Column(String(100), nullable=False)
     full_name = Column(String(255), nullable=False)
@@ -13,6 +13,7 @@ class Police(Base):
     address = Column(String(255), nullable=False)
     phone = Column(String(20), nullable=False)
     cccd = Column(String(20), nullable=False)
+    geolocation = Column(String(100))
     description = Column(Text)
     role = Column(String(50), nullable=False)
     joined = Column(Date)

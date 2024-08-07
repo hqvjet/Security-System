@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Form, Input, message } from 'antd';
-import { AlignCenterOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { usingAuthenticationAPI } from '@/apis/authentication';
 
 interface RegisterFormValues {
@@ -46,120 +46,130 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-4xl text-center text-white font-bold mb-4 ml-20">Register</h1>
-      <Form
-        name="register"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
-          <Input prefix={<UserOutlined />} />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password prefix={<LockOutlined />} />
-        </Form.Item>
-
-        <Form.Item
-          label="Confirm Password"
-          name="confirmPassword"
-          dependencies={['password']}
-          rules={[
-            { required: true, message: 'Please confirm your password!' },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error('The two passwords that you entered do not match!'));
-              },
-            }),
-          ]}
-        >
-          <Input.Password prefix={<LockOutlined />} />
-        </Form.Item>
-
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[{ required: true, type: 'email', message: 'Please input your email!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Full Name"
-          name="full_name"
-          rules={[{ required: true, message: 'Please input your full name!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Age"
-          name="age"
-          rules={[{ required: true, message: 'Please input your age!' }]}
-        >
-          <Input type="number" />
-        </Form.Item>
-
-        <Form.Item
-          label="Address"
-          name="address"
-          rules={[{ required: true, message: 'Please input your address!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Phone"
-          name="phone"
-          rules={[{ required: true, message: 'Please input your phone number!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="CCCD"
-          name="cccd"
-          rules={[{ required: true, message: 'Please input your CCCD!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="agree"
-          valuePropName="checked"
-          wrapperCol={{ offset: 8, span: 16 }}
-          rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Please agree to terms and conditions!') }]}
-        >
-          <Checkbox>I agree to the terms and conditions</Checkbox>
-        </Form.Item>
-
-        <Form.Item wrapperCol={{ offset: 13, span: 16 }}>
-          <Button style = {{background:"#1944BA"}} type="primary" htmlType="submit" loading={loading}>
-            Register
-          </Button>
-        </Form.Item>
-
-        <div style={{ textAlign: 'center', marginTop: '20px', marginLeft:'100px' }}>
-          Already have an account? <Button type="link" className = 'text-blue-200' onClick={handleLogin}>Login</Button>
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="w-full max-w-3xl p-12 bg-slate-400 shadow-lg rounded-lg">
+        <div className="flex flex-col items-center mb-6">
+          <h1 className="text-4xl font-bold text-center text-blue-700">Register</h1>
         </div>
-      </Form>
+        <Form
+          name="register"
+          layout="vertical"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className="space-y-4"
+        >
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[{ required: true, message: 'Please input your username!' }]}
+          >
+            <Input prefix={<UserOutlined className="text-gray-400" />} placeholder="Username" />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: 'Please input your password!' }]}
+          >
+            <Input.Password prefix={<LockOutlined className="text-gray-400" />} placeholder="Password" />
+          </Form.Item>
+
+          <Form.Item
+            label="Confirm Password"
+            name="confirmPassword"
+            dependencies={['password']}
+            rules={[
+              { required: true, message: 'Please confirm your password!' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password prefix={<LockOutlined className="text-gray-400" />} placeholder="Confirm Password" />
+          </Form.Item>
+
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, type: 'email', message: 'Please input your email!' }]}
+          >
+            <Input placeholder="Email" />
+          </Form.Item>
+
+          <Form.Item
+            label="Full Name"
+            name="full_name"
+            rules={[{ required: true, message: 'Please input your full name!' }]}
+          >
+            <Input placeholder="Full Name" />
+          </Form.Item>
+
+          <Form.Item
+            label="Age"
+            name="age"
+            rules={[{ required: true, message: 'Please input your age!' }]}
+          >
+            <Input type="number" placeholder="Age" />
+          </Form.Item>
+
+          <Form.Item
+            label="Address"
+            name="address"
+            rules={[{ required: true, message: 'Please input your address!' }]}
+          >
+            <Input placeholder="Address" />
+          </Form.Item>
+
+          <Form.Item
+            label="Phone"
+            name="phone"
+            rules={[{ required: true, message: 'Please input your phone number!' }]}
+          >
+            <Input placeholder="Phone" />
+          </Form.Item>
+
+          <Form.Item
+            label="CCCD"
+            name="cccd"
+            rules={[{ required: true, message: 'Please input your CCCD!' }]}
+          >
+            <Input placeholder="CCCD" />
+          </Form.Item>
+
+          <Form.Item
+            name="agree"
+            valuePropName="checked"
+            wrapperCol={{ span: 24 }}
+            rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Please agree to terms and conditions!') }]}
+          >
+            <Checkbox>I agree to the terms and conditions</Checkbox>
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600 transition duration-300"
+              loading={loading}
+            >
+              Register
+            </Button>
+          </Form.Item>
+
+          <div className="text-center mt-4">
+            Already have an account?{' '}
+            <Button type="link" className="text-blue-500 hover:text-blue-600" onClick={handleLogin}>
+              Login
+            </Button>
+          </div>
+        </Form>
+      </div>
     </div>
   );
 };

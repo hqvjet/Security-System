@@ -11,13 +11,13 @@ interface HorizontalNavigationProps {
 
 export default function HorizontalNavigation(props: HorizontalNavigationProps) {
     return (
-        <div className="flex justify-start w-[460px]">
+        <div className="flex justify-start w-[600px]">
             <Menu 
                 onClick={props.onClick} 
                 selectedKeys={[props.current]} 
                 mode="horizontal" 
                 items={props.items} 
-                className="rounded-full mb-5 w-[500px]"
+                className="rounded-full mb-5 w-[600px] flex justify-items-center items-center"
             />
         </div>
     )

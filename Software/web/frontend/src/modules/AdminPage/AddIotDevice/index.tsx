@@ -1,28 +1,30 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import { useRouter } from 'next/navigation';
-import { usingAdminAPI } from '@/apis/admin'
-import { usingIotDeviceAPI } from '@/apis';
+import { usingIotDeviceAPI, usingAuthenticationAPI } from '@/apis';
+
+const { Option } = Select;
 
 const AddIoTDeviceForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [adminUsernames, setAdminUsernames] = useState<string[]>([]);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    const fetchAdminUsernames = async () => {
+    const fetchAdminData = async () => {
       try {
-        const response = await usingAdminAPI.get_list();
-        setAdminUsernames(response.data);
+        const response = await usingAuthenticationAPI.cookie();
+        const userData = response.data;
+        form.setFieldsValue({ admin_id: userData.user_id });
+        message.info(`Admin ID: ${userData.user_id}`);
       } catch (error) {
-        console.error('Error fetching admin usernames:', error);
-        message.error('Failed to fetch admin usernames');
+        console.error('Error fetching admin data:', error);
       }
     };
 
-    fetchAdminUsernames();
-  }, []);
+    fetchAdminData();
+  }, [form]);
 
   const onFinish = async (values: { [key: string]: any }) => {
     try {
@@ -46,6 +48,7 @@ const AddIoTDeviceForm = () => {
   return (
     <div>
       <Form
+        form={form}
         name="addIotDevice"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
@@ -55,11 +58,10 @@ const AddIoTDeviceForm = () => {
         autoComplete="off"
       >
         <Form.Item
-          label="ID"
-          name="id"
-          rules={[{ required: true, message: 'Please input ID!' }]}
+          label="Admin ID"
+          name="admin_id"
         >
-          <Input />
+          <Input disabled />
         </Form.Item>
 
         <Form.Item
@@ -68,8 +70,8 @@ const AddIoTDeviceForm = () => {
           rules={[{ required: true, message: 'Please select power status!' }]}
         >
           <Select>
-            <Select.Option value={true}>On</Select.Option>
-            <Select.Option value={false}>Off</Select.Option>
+            <Option value={true}>On</Option>
+            <Option value={false}>Off</Option>
           </Select>
         </Form.Item>
 
@@ -79,20 +81,6 @@ const AddIoTDeviceForm = () => {
           rules={[{ required: true, message: 'Please input geolocation!' }]}
         >
           <Input.TextArea autoSize={{ minRows: 2 }} placeholder="Latitude; Longitude" />
-        </Form.Item>
-
-        <Form.Item
-          label="Admin ID"
-          name="username_admin"
-          rules={[{ required: true, message: 'Please select an admin!' }]}
-        >
-          <Select>
-            {adminUsernames.map(username => (
-              <Select.Option key={username} value={username}>
-                {username}
-              </Select.Option>
-            ))}
-          </Select>
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

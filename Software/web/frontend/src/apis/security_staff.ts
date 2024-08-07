@@ -1,4 +1,4 @@
-import {  SECURITY_STAFF_API } from './index'
+import { SECURITY_STAFF_API } from './index';
 
 export const usingSecurityStaffAPI = {
     getList: () => {
@@ -7,28 +7,25 @@ export const usingSecurityStaffAPI = {
     get: (securityId: string) => {
         return SECURITY_STAFF_API.get(`/get/${securityId}`);
     },
-    create: (securityStaffData: { [key: string]: any }) => {
-        return SECURITY_STAFF_API.post('/create', securityStaffData);
-    },
     delete: (securityId: string) => {
         return SECURITY_STAFF_API.delete(`/delete/${securityId}`);
     },
     update: (securityId: string, securityStaffData: { [key: string]: any }) => {
         return SECURITY_STAFF_API.put(`/update/${securityId}`, securityStaffData);
     },
-    login: (values: { [key: string]: any }) => {
-        return SECURITY_STAFF_API.post('/login', values);
-    },
     checkViolenceStatus: () => {
-        return SECURITY_STAFF_API.get('/violence/is_violence')
+        return SECURITY_STAFF_API.get('/violence/is_violence');
     },
     getViolenceVideo: () => {
-        return SECURITY_STAFF_API.get('/violence/get_video', {responseType: 'blob'})
+        return SECURITY_STAFF_API.get('/violence/get_video', { responseType: 'blob' });
     },
     saveViolenceVideo: () => {
-        return SECURITY_STAFF_API.get('/violence/save_video')
+        return SECURITY_STAFF_API.get('/violence/save_video');
     },
     denyViolence: () => {
-        return SECURITY_STAFF_API.get('/violence/deny')
-    }
-}
+        return SECURITY_STAFF_API.get('/violence/deny');
+    },
+    assignmission: (missionData: { location: { lat: number, lng: number }, police: string[] }) => {
+        return SECURITY_STAFF_API.post('/assign_missions', missionData);
+    },
+};

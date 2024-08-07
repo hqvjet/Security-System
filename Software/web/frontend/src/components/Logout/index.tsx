@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
 import { LogoutOutlined } from '@ant-design/icons';
+import { usingAuthenticationAPI } from '@/apis/authentication'; 
 
 const Logout = () => {
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
+      await usingAuthenticationAPI.logout();
       message.success('Logged out successfully.');
       router.push('/login');
     } catch (error) {
@@ -23,7 +25,7 @@ const Logout = () => {
       onClick={handleLogout}
     >
       <LogoutOutlined />
-      <p className='text-white font-bold text-xl'>Logout</p>
+      <span className='text-white font-bold text-xl ml-2'>Logout</span>
     </Button>
   );
 };
@@ -33,11 +35,7 @@ const ConditionalLogout: React.FC = () => {
   const [showLogout, setShowLogout] = useState(false);
 
   useEffect(() => {
-    if (pathname?.startsWith('/admin') || pathname?.startsWith('/security-staff')) {
-      setShowLogout(true);
-    } else {
-      setShowLogout(false); 
-    }
+    setShowLogout(pathname?.startsWith('/admin') || pathname?.startsWith('/security-staff') || pathname?.startsWith('/police'));
   }, [pathname]);
 
   return showLogout ? <Logout /> : null;
