@@ -68,14 +68,6 @@ const EditIoTDeviceForm = () => {
         autoComplete="off"
       >
         <Form.Item
-          label="ID"
-          name="id"
-          rules={[{ required: true, message: 'Please input ID!' }]}
-        >
-          <Input disabled={true} />
-        </Form.Item>
-
-        <Form.Item
           label="Power"
           name="power"
           rules={[{ required: true, message: 'Please select power status!' }]}

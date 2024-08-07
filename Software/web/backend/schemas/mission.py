@@ -1,15 +1,15 @@
 from pydantic import BaseModel, Json
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
 
 class MissionBase(BaseModel):
-    id: UUID
-    iot_device_id: str
-    security_staff_id: str
+    id: Optional[int] = None
+    iot_device_id: Optional[str] = None
+    security_staff_id: Optional[str] = None
     assigned_police_ids: List[str]
     location: Json
-    state: str
+    state: Optional[str] = None
 
 class MissionCreate(MissionBase):
     pass

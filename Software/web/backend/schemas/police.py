@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 class PoliceBase(BaseModel):
-    id: str
+    id: Optional[int] = None
     username: str
     full_name: str
     email: EmailStr
@@ -17,11 +17,11 @@ class PoliceBase(BaseModel):
     work_history: str
 
 class PoliceCreate(PoliceBase):
-    password: str
-    cccd: str
-    role: str
-    description: str = None
-    avatar: str = None
+    password: Optional[str] = None
+    cccd: Optional[str] = None
+    role: Optional[str] = None
+    description: Optional[str] = None 
+    avatar: Optional[str] = None 
 
 class PoliceUpdate(PoliceBase):
     username: Optional[str] = None

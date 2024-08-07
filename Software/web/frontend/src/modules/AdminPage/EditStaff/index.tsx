@@ -169,7 +169,7 @@ const EditStaff = () => {
             name="role"
             rules={[{ required: true, message: 'Please select a role!' }]}
           >
-            <Select onChange={handleRoleChange} value={staffData.role}>
+            <Select onChange={handleRoleChange} value={staffData.role} disabled>
               <Option value="security">Security</Option>
               <Option value="police">Police</Option>
             </Select>

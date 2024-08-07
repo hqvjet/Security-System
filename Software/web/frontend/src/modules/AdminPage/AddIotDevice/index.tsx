@@ -1,13 +1,30 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import { useRouter } from 'next/navigation';
-import { usingIotDeviceAPI } from '@/apis';
+import { usingIotDeviceAPI, usingAuthenticationAPI } from '@/apis';
+
+const { Option } = Select;
 
 const AddIoTDeviceForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const response = await usingAuthenticationAPI.cookie();
+        const userData = response.data;
+        form.setFieldsValue({ admin_id: userData.user_id });
+        message.info(`Admin ID: ${userData.user_id}`);
+      } catch (error) {
+        console.error('Error fetching admin data:', error);
+      }
+    };
+
+    fetchAdminData();
+  }, [form]);
 
   const onFinish = async (values: { [key: string]: any }) => {
     try {
@@ -41,11 +58,10 @@ const AddIoTDeviceForm = () => {
         autoComplete="off"
       >
         <Form.Item
-          label="ID"
-          name="id"
-          rules={[{ required: true, message: 'Please input ID!' }]}
+          label="Admin ID"
+          name="admin_id"
         >
-          <Input />
+          <Input disabled />
         </Form.Item>
 
         <Form.Item
@@ -54,8 +70,8 @@ const AddIoTDeviceForm = () => {
           rules={[{ required: true, message: 'Please select power status!' }]}
         >
           <Select>
-            <Select.Option value={true}>On</Select.Option>
-            <Select.Option value={false}>Off</Select.Option>
+            <Option value={true}>On</Option>
+            <Option value={false}>Off</Option>
           </Select>
         </Form.Item>
 

@@ -3,13 +3,13 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 class SecurityStaffBase(BaseModel):
-    id: str
-    username: str
-    full_name: str
+    id: Optional[int] = None
+    username: Optional[str] = None
+    full_name: Optional[str] = None
     email: EmailStr
-    age: int
-    address: str
-    phone: str
+    age: Optional[int] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
     description: Optional[str] = None
     joined: Optional[date] = None
     work_at: Optional[str] = None

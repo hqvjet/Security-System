@@ -62,7 +62,6 @@ def register_admin_user(admin_data: AdminCreate, db: Session = Depends(get_db)):
         hashed_password = bcrypt.hash(admin_data.password)
 
         new_admin = Admin(
-            id=str(uuid.uuid4()),
             username=admin_data.username,
             password=hashed_password,
             full_name=admin_data.full_name,
