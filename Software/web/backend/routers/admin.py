@@ -65,7 +65,6 @@ def add_police(police_data: PoliceCreate, db: Session, joined_time: datetime):
     try:
         hashed_password = bcrypt.hash(police_data.password)
         new_police = Police(
-            id = police_data.id,
             username=police_data.username,
             password=hashed_password,
             full_name=police_data.full_name,
@@ -93,7 +92,6 @@ def add_security(securitystaff_data: SecurityStaffCreate, db: Session, joined_ti
     try:
         hashed_password = bcrypt.hash(securitystaff_data.password)
         new_security = SecurityStaff(
-            id = securitystaff_data.id,
             username=securitystaff_data.username,
             password=hashed_password,
             full_name=securitystaff_data.full_name,

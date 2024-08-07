@@ -1,12 +1,13 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class IoTDeviceBase(BaseModel):
-    id: str
+    id: Optional[int] = None
     power: bool
-    geolocation: str
+    geolocation: Optional[str] = None
 
 class IoTDeviceCreate(IoTDeviceBase):
-    id: str
+    id: int
     power: bool
     geolocation: str
 

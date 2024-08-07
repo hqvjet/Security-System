@@ -4,7 +4,7 @@ from db import Base
 class Police(Base):
     __tablename__ = 'police'
 
-    id = Column(String(50), primary_key=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(100), nullable=False)
     password = Column(String(100), nullable=False)
     full_name = Column(String(255), nullable=False)
