@@ -1,28 +1,13 @@
-'use client'
-import React, { useState, useEffect } from 'react';
+'use client';
+import React, { useState } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import { useRouter } from 'next/navigation';
-import { usingAdminAPI } from '@/apis/admin'
 import { usingIotDeviceAPI } from '@/apis';
 
 const AddIoTDeviceForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [adminUsernames, setAdminUsernames] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchAdminUsernames = async () => {
-      try {
-        const response = await usingAdminAPI.get_list();
-        setAdminUsernames(response.data);
-      } catch (error) {
-        console.error('Error fetching admin usernames:', error);
-        message.error('Failed to fetch admin usernames');
-      }
-    };
-
-    fetchAdminUsernames();
-  }, []);
+  const [form] = Form.useForm();
 
   const onFinish = async (values: { [key: string]: any }) => {
     try {
@@ -46,6 +31,7 @@ const AddIoTDeviceForm = () => {
   return (
     <div>
       <Form
+        form={form}
         name="addIotDevice"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
@@ -79,20 +65,6 @@ const AddIoTDeviceForm = () => {
           rules={[{ required: true, message: 'Please input geolocation!' }]}
         >
           <Input.TextArea autoSize={{ minRows: 2 }} placeholder="Latitude; Longitude" />
-        </Form.Item>
-
-        <Form.Item
-          label="Admin ID"
-          name="username_admin"
-          rules={[{ required: true, message: 'Please select an admin!' }]}
-        >
-          <Select>
-            {adminUsernames.map(username => (
-              <Select.Option key={username} value={username}>
-                {username}
-              </Select.Option>
-            ))}
-          </Select>
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

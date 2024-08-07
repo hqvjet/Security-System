@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Col, Table, Button, Space } from "antd";
+import { Col, Table, Button, Space, message } from "antd";
 import HorizontalNavigation from "@/components/HorizontalNavigation";
 import MyLineChart from '@/components/Chart';
 import { FcAddDatabase, FcDeleteRow, FcEditImage, FcStatistics } from 'react-icons/fc';
@@ -8,13 +8,15 @@ import { GiPoliceOfficerHead } from 'react-icons/gi';
 import { GoDeviceCameraVideo } from 'react-icons/go';
 import { SiSpringsecurity } from 'react-icons/si';
 import { useRouter } from 'next/navigation';
+import moment from 'moment';
 
-import { usingPoliceAPI, usingSecurityStaffAPI, usingIotDeviceAPI } from '@/apis';
+import { usingPoliceAPI, usingSecurityStaffAPI, usingIotDeviceAPI, usingAdminAPI, usingAuthenticationAPI } from '@/apis';
 
 const items = [
   { label: 'Police', key: 'police', icon: <GiPoliceOfficerHead /> },
   { label: 'Security Staff', key: 'security', icon: <SiSpringsecurity /> },
   { label: 'IoT Device', key: 'iot', icon: <GoDeviceCameraVideo /> },
+  { label: 'Missions', key: 'missions', icon: <FcStatistics /> },
   { label: 'Statistic', key: 'statistic', icon: <FcStatistics />, },
 ];
 
@@ -24,6 +26,20 @@ const Admin = () => {
   const [col, setCol] = useState<Array<{ title: string; dataIndex: string; key: string; }>>([]);
   const [statis, setStatis] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchAdminId = async () => {
+      try {
+        const response = await usingAuthenticationAPI.cookie();
+        const userData = response.data;
+        message.info(`Admin ID: ${userData.user_id}`);
+      } catch (error) {
+        console.error('Error fetching admin ID:', error);
+      }
+    };
+
+    fetchAdminId();
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -42,6 +58,9 @@ const Admin = () => {
         case 'iot':
           api = usingIotDeviceAPI;
           break;
+        case 'missions':
+          api = usingAdminAPI;
+          break;
         default:
           return;
       }
@@ -59,6 +78,15 @@ const Admin = () => {
               if (typeof text === 'boolean') {
                 return text ? 'On' : 'Off';
               }
+              if (key === 'location' || key === 'geolocation') {
+                return `Lat: ${text.lat}, Lng: ${text.lng}`;
+              }
+              if (key === 'assigned_police_ids') {
+                return text.join(', ');
+              }
+              if (key === 'created_at' || key === 'updated_at') {
+                return moment(text).format('YYYY-MM-DD HH:mm:ss');
+              }
               return text;
             },
           };
@@ -68,25 +96,30 @@ const Admin = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };  
-  
+  };
+
   const onClick = (e: { key: React.SetStateAction<string>; }) => {
     setCurrent(e.key);
     setStatis(e.key === 'statistic');
   };
-  
+
   const handleAddStaff = () => {
     router.push('/admin/add-staff');
   };
-  
+
   const handleAddIotDevice = () => {
     router.push('/admin/add-iot-device');
   };
 
   const handleEdit = (record: { [key: string]: any }) => {
     const type = current;
-    router.push(`/admin/edit-staff?id=${record.id}&type=${type}`);
+    if (type === 'iot') {
+      router.push(`/admin/edit-iot?id=${record.id}`);
+    } else {
+      router.push(`/admin/edit-staff?id=${record.id}&type=${type}`);
+    }
   };
+  
 
   const handleDelete = (record: { [key: string]: any }) => {
     const { id } = record;
@@ -102,11 +135,14 @@ const Admin = () => {
         case 'iot':
           api = usingIotDeviceAPI;
           break;
+        case 'missions':
+          api = usingAdminAPI;
+          break;
         default:
           console.error('Invalid current type:', current);
           return;
       }
-  
+
       api.delete(id)
         .then(() => {
           setData(data.filter((item: { [key: string]: any }) => item.id !== id));
@@ -115,6 +151,10 @@ const Admin = () => {
           console.error('Error deleting record:', error);
         });
     }
+  };
+
+  const handleComplete = (record: { [key: string]: any }) => {
+    console.log('Completing mission:', record);
   };
 
   return (
@@ -134,7 +174,12 @@ const Admin = () => {
               key: 'operation',
               render: (record) => (
                 <Space className='flex justify-end'>
+                  {current !== 'missions' && (
                   <Button type="primary" icon={<FcEditImage/>} onClick={() => handleEdit(record)}>Edit</Button>
+                  )}
+                  {current === 'missions' && record.state !== 'Completed' && (
+                    <Button type="primary" onClick={() => handleComplete(record)}>Complete</Button>
+                  )}
                   <Button type="primary" icon={<FcDeleteRow/>} danger onClick={() => handleDelete(record)}>Delete</Button>
                 </Space>
               ),

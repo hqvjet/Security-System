@@ -9,3 +9,4 @@ GeoAlchemy2
 passlib
 postgis
 ffmpeg
+moment

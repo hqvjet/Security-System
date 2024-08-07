@@ -15,13 +15,14 @@ CREATE TABLE admin (
 
 CREATE TABLE Police (
     ID VARCHAR(50) PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     email VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
+    geolocation VARCHAR(100),
     description TEXT,
     role VARCHAR(50) NOT NULL,
     CCCD VARCHAR(20) NOT NULL,
@@ -34,7 +35,7 @@ CREATE TABLE Police (
 
 CREATE TABLE Security_Staff (
     ID VARCHAR(50) PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     age INT NOT NULL,
@@ -52,8 +53,7 @@ CREATE TABLE Security_Staff (
 CREATE TABLE IoT_Device (
     ID VARCHAR(50) PRIMARY KEY,
     power BOOLEAN NOT NULL,
-    geolocation VARCHAR(50) NOT NULL,
-    username_admin VARCHAR(50) REFERENCES Admin(username)
+    geolocation VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Video (
@@ -62,3 +62,13 @@ CREATE TABLE Video (
     iot_id VARCHAR(50) REFERENCES IoT_Device(ID)
 );
 
+CREATE TABLE Mission (
+    ID UUID PRIMARY KEY,
+    security_staff_id VARCHAR(50) REFERENCES Security_Staff(ID),
+    iot_device_id VARCHAR(50) REFERENCES IoT_Device(ID),
+    location VARCHAR(255) NOT NULL,
+    assigned_police_ids VARCHAR(50)[] NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
