@@ -8,19 +8,19 @@ class MissionBase(BaseModel):
     iot_device_id: Optional[str] = None
     security_staff_id: Optional[str] = None
     assigned_police_ids: List[str]
-    location: Json
+    location: Optional[str] = None
     state: Optional[str] = None
 
 class MissionCreate(MissionBase):
     pass
 
 class MissionUpdate(BaseModel):
-    location: Json = None
-    assigned_police_ids: List[str] = None
+    location: Optional[str] = None
+    assigned_police_ids: List[int] = None
     state: str = None
 
 class Mission(MissionBase):
-    id: UUID
+    id: int
     created_at: datetime
     updated_at: datetime
 

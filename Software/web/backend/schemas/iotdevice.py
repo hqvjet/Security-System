@@ -7,7 +7,6 @@ class IoTDeviceBase(BaseModel):
     geolocation: Optional[str] = None
 
 class IoTDeviceCreate(IoTDeviceBase):
-    id: int
     power: bool
     geolocation: str
 
