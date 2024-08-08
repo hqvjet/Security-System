@@ -35,7 +35,7 @@ const AddStaffForm = () => {
   };
 
   return (
-    <div>
+    <div className='mt-32'>
       <Form
         name="addStaff"
         labelCol={{ span: 8 }}

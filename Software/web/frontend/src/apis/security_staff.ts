@@ -25,7 +25,7 @@ export const usingSecurityStaffAPI = {
     denyViolence: () => {
         return SECURITY_STAFF_API.get('/violence/deny');
     },
-    assignmission: (missionData: { location: { lat: number, lng: number }, police: string[] }) => {
+    assignmission: (missionData: any) => {
         return SECURITY_STAFF_API.post('/assign_missions', missionData);
     },
 };

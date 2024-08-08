@@ -15,6 +15,7 @@ const SecurityStaffDashboard = () => {
     const [iotDevices, setIotDevices] = useState<IoTDevice[]>([]);
     const [selectedPolice, setSelectedPolice] = useState<string[]>([]);
     const [securityStaffId, setSecurityStaffId] = useState<string>('');
+    // const [geolocation, setGeolocation] = useState({ lat: 0.0, lng: 0.0 });
 
     interface IoTDevice {
         id: string;
@@ -60,6 +61,7 @@ const SecurityStaffDashboard = () => {
                                 playAlert();
                                 setDetected(true);
                             } else {
+                                stopAlert();
                                 setDetected(false);
                             }
                         })
@@ -78,18 +80,27 @@ const SecurityStaffDashboard = () => {
     }, []);
 
     useEffect(() => {
+        // if (detected) {
+        //     usingSecurityStaffAPI.getViolenceVideo()
+        //         .then((res: any) => {
+        //             const video_blob = new Blob([res.data], { type: 'video/mp4' });
+        //             const video_URL = URL.createObjectURL(video_blob);
+        //             console.log(video_URL);
+        //             setVideoURL(video_URL);
+        //         })
+        //         .catch((e) => {
+        //             console.log(e);
+        //             message.error('Error While Fetching Video!');
+        //         });
+        // }
         if (detected) {
-            usingSecurityStaffAPI.getViolenceVideo()
+            usingIotDeviceAPI.getList()
                 .then((res: any) => {
-                    const video_blob = new Blob([res.data], { type: 'video/mp4' });
-                    const video_URL = URL.createObjectURL(video_blob);
-                    console.log(video_URL);
-                    setVideoURL(video_URL);
+                    setIotDevices(res.data)
+                    // let geoString = res.data[0].geolocation.split(';');
+                    // setGeolocation({ lat: parseFloat(geoString[0]), lng: parseFloat(geoString[1]) })
+                    // console.log({ lat: parseFloat(geoString[0]), lng: parseFloat(geoString[1]) })
                 })
-                .catch((e) => {
-                    console.log(e);
-                    message.error('Error While Fetching Video!');
-                });
         }
     }, [detected]);
 
@@ -106,20 +117,20 @@ const SecurityStaffDashboard = () => {
         fetchPoliceList();
     }, []);
 
-    useEffect(() => {
-        const fetchIotDevices = async () => {
-            try {
-                const response = await usingIotDeviceAPI.getList();
-                const filteredDevices = response.data.filter((device: IoTDevice) => device.id === 'iot_0001');
-                setIotDevices(filteredDevices);
-                console.log(response.data);
-            } catch (error) {
-                console.error("Error fetching IoT devices:", error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchIotDevices = async () => {
+    //         try {
+    //             const response = await usingIotDeviceAPI.getList();
+    //             const filteredDevices = response.data.filter((device: IoTDevice) => device.id === 'iot_0001');
+    //             setIotDevices(filteredDevices);
+    //             console.log(response.data);
+    //         } catch (error) {
+    //             console.error("Error fetching IoT devices:", error);
+    //         }
+    //     };
 
-        fetchIotDevices();
-    }, []);
+    //     fetchIotDevices();
+    // }, []);
 
     const playAlert = () => {
         audio.currentTime = 0;
@@ -156,12 +167,11 @@ const SecurityStaffDashboard = () => {
             message.warning('No IoT devices available.');
             return;
         }
-        const [lat, lng] = iotDevices[0].geolocation.split(';').map(Number);
         const missionData = {
-            location: { lat, lng },
+            location: iotDevices[0].geolocation,
             police: selectedPolice,
             security_staff_id: securityStaffId,
-            iot_device_id: iotDevices[0].id  
+            iot_device_id: iotDevices[0].id
         };
         usingSecurityStaffAPI.assignmission(missionData)
             .then(() => {
@@ -170,7 +180,7 @@ const SecurityStaffDashboard = () => {
                     .filter(police => selectedPolice.includes(police.id))
                     .map(police => police.id)
                     .join(', ');
-                message.info(`mission assigned to: ${police_id} at location (Lat: ${lat}, Lng: ${lng} of IoT Device ${iotDevices[0].id} by ${securityStaffId})`);
+                message.info(`Mission assigned`);
             })
             .catch((e: any) => {
                 console.error(e);
@@ -186,16 +196,17 @@ const SecurityStaffDashboard = () => {
                         <Row gutter={[16, 16]}>
                             <Col span={18} className="flex justify-center">
                                 <div className="border border-gray-800 rounded-lg shadow-lg w-[1200px] h-[880px] flex justify-center items-center overflow-hidden">
-                                    <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_KEY_GOOGLE_MAP}>
-                                        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={18} center={center} options={{ mapTypeId: 'hybrid' }}>
-                                            {iotDevices.map(device => {
-                                                const [lat, lng] = device.geolocation.split(';').map(Number);
+                                    <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_KEY_GOOGLE_MAP as string}>
+                                        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={18} center={center}>
+                                            {iotDevices.map((device, idx) => {
+                                                let geolocation = device.geolocation.split(';'); 
                                                 return (
                                                     <Marker
-                                                        key={device.id}
-                                                        position={{ lat, lng }}
+                                                        key={idx}
+                                                        position={{lat: Number(geolocation[0]), lng: Number(geolocation[1])}}
                                                     />
                                                 );
+
                                             })}
                                         </GoogleMap>
                                     </LoadScript>
@@ -232,16 +243,10 @@ const SecurityStaffDashboard = () => {
                     </>
                 ) : (
                     <div>
-                        <div className="border border-gray-300 rounded-lg shadow-lg w-[1200px] h-[800px] flex justify-center items-center overflow-hidden">
-                            {videoURL == null ? (
-                                <p className="text-gray-500">LOADING VIDEO</p>
-                            ) : (
-                                <video controls className="w-full h-full rounded-lg shadow-md">
-                                    <source src={videoURL} />
-                                </video>
-                            )}
+                        <div className="w-[1200px] h-[800px] flex justify-center items-center overflow-hidden">
+                            <h1 className='text-5xl text-green-600 drop-shadow-lg'>Violence Detected, Please Take A Look At violence.mp4</h1>
                         </div>
-    
+
                         <div className="mt-6 flex items-center justify-center space-x-4">
                             <Button className="text-lg bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 rounded-lg" type="primary" icon={<CheckCircleOutlined />} onClick={handleAccept}>Accept</Button>
                             <Button className="text-lg bg-red-600 text-white hover:bg-red-700 transition-colors duration-300 rounded-lg" type="default" icon={<CloseCircleOutlined />} onClick={handleCancel}>Cancel</Button>
