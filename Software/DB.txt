@@ -67,7 +67,7 @@ CREATE TABLE mission (
     security_staff_id INTEGER REFERENCES security_staff(id) ON DELETE CASCADE,
     iot_device_id INTEGER REFERENCES iot_device(id) ON DELETE CASCADE,
     location VARCHAR(255) NOT NULL,
-    assigned_police_ids INTEGER[] NOT NULL,
+    assigned_police_ids VARCHAR(255) NOT NULL,
     state VARCHAR(50) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

@@ -79,10 +79,11 @@ const Admin = () => {
                 return text ? 'On' : 'Off';
               }
               if (key === 'location' || key === 'geolocation') {
-                return `Lat: ${text.lat}, Lng: ${text.lng}`;
+                const [lat, lng] = text.split(',').map((coord: string) => coord.trim());
+                return `Lat: ${lat}, Lng: ${lng}`;
               }
               if (key === 'assigned_police_ids') {
-                return text.join(', ');
+                return text;
               }
               if (key === 'created_at' || key === 'updated_at') {
                 return moment(text).format('YYYY-MM-DD HH:mm:ss');
@@ -153,9 +154,18 @@ const Admin = () => {
     }
   };
 
-  const handleComplete = (record: { [key: string]: any }) => {
-    console.log('Completing mission:', record);
+  const handleComplete = async (record: { [key: string]: any }) => {
+    const { id } = record;
+    try {
+      await usingPoliceAPI.updateMission(id, { state: 'Completed' });
+      message.success('Mission marked as completed successfully.');
+      fetchData();
+    } catch (error) {
+      console.error('Error completing mission:', error);
+      message.error('Failed to mark mission as completed.');
+    }
   };
+  
 
   return (
     <Col className="w-auto h-5/6 mt-40">
