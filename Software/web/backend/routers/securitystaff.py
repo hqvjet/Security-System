@@ -140,11 +140,14 @@ def assign_missions(missionData: Dict, db: Session = Depends(get_db)):
     assigned_police = db.query(Police).filter(Police.id.in_(police_ids)).all()
     if not assigned_police:
         raise HTTPException(status_code=404, detail="Police not found")
+    
+    assigned_police_ids_str = ",".join(map(str, police_ids))
+
     new_mission = Mission(
         security_staff_id=security_staff_id,
         iot_device_id=iot_device_id,
         location=location,
-        assigned_police_ids=police_ids,
+        assigned_police_ids=assigned_police_ids_str,
         state="Assigned"
     )
     db.add(new_mission)

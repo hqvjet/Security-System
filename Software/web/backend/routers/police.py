@@ -71,7 +71,7 @@ def get_mission_by_police_or_mission_id(police_id: str = None, mission_id: UUID 
     return mission
 
 @router.put("/update_mission/{mission_id}", response_model=MissionSchemas)
-def update_mission(mission_id: UUID, mission_update: MissionUpdate, db: Session = Depends(get_db)):
+def update_mission(mission_id: int, mission_update: MissionUpdate, db: Session = Depends(get_db)):
     mission = db.query(Mission).filter(Mission.id == mission_id).first()
     if not mission:
         raise HTTPException(status_code=404, detail="Mission not found")

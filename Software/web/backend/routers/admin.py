@@ -114,14 +114,14 @@ def add_security(securitystaff_data: SecurityStaffCreate, db: Session, joined_ti
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
     
 @router.get("/get_mission/{mission_id}", response_model=MissionSchemas)
-def get_mission(mission_id: UUID, db: Session = Depends(get_db)):
+def get_mission(mission_id: int, db: Session = Depends(get_db)):
     mission = db.query(Mission).filter(Mission.id == mission_id).first()
     if not mission:
         raise HTTPException(status_code=404, detail="Mission not found")
     return mission
 
 @router.delete("/delete_mission/{mission_id}", response_model=dict)
-def delete_mission(mission_id: UUID, db: Session = Depends(get_db)):
+def delete_mission(mission_id: int, db: Session = Depends(get_db)):
     mission = db.query(Mission).filter(Mission.id == mission_id).first()
     if not mission:
         raise HTTPException(status_code=404, detail="Mission not found")
