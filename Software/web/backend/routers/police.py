@@ -1,8 +1,8 @@
 import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List
-from uuid import UUID
 from db import SessionLocal
 from models.police import Police
 from schemas.police import GeolocationUpdate, Police as PoliceSchema, PoliceUpdate
@@ -61,9 +61,11 @@ def update_police(police_id: str, police_data: PoliceUpdate, db: Session = Depen
     return police
 
 @router.get("/mission", response_model=MissionSchemas)
-def get_mission_by_police_or_mission_id(police_id: str = None, mission_id: UUID = None, db: Session = Depends(get_db)):
+def get_mission_by_police_or_mission_id(police_id: str = None, mission_id: int = None, db: Session = Depends(get_db)):
     if police_id:
-        mission = db.query(Mission).filter(Mission.assigned_police_ids.any(police_id)).order_by(Mission.created_at.desc()).first()
+        mission = db.query(Mission).filter(
+            func.concat(',', Mission.assigned_police_ids, ',').like(f'%{police_id},%')
+        ).order_by(Mission.created_at.desc()).first()
     elif mission_id:
         mission = db.query(Mission).filter(Mission.id == mission_id).first()
     if not mission:

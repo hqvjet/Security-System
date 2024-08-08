@@ -15,7 +15,7 @@ class MissionCreate(MissionBase):
 
 class MissionUpdate(BaseModel):
     location: Optional[str] = None
-    assigned_police_ids: List[str] = None
+    assigned_police_ids: Optional[str] = None
     state: Optional[str] = None
 
 class Mission(MissionBase):
