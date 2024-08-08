@@ -6,15 +6,6 @@
  */
 
 import React from 'react';
-import type { PropsWithChildren } from 'react';
-import {
-  ScrollView,
-  Text,
-  Image,
-  TextInput,
-  View,
-} from 'react-native';
-import tw from 'twrnc';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -35,12 +26,12 @@ function App(): React.JSX.Element {
             options={{ headerShown: false }}
           />
 
-        {/* <Stack.Screen
+          <Stack.Screen
             name='MapCustom'
             component={MapCustom}
             options={{ headerShown: false }}
-          />*/}
-        </Stack.Navigator> 
+          />
+        </Stack.Navigator>
       </NavigationContainer>
     </>
   );

@@ -1,8 +1,9 @@
 from io import BytesIO
 import os
 import shutil
-import bcrypt
+from pathlib import Path
 import ffmpeg
+import bcrypt
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
@@ -21,9 +22,7 @@ router = APIRouter(
     tags=['Security Staff']
 )
 
-is_violence = True
-violence_video = None
-buffer = BytesIO()
+is_violence = False
 
 def get_db():
     db = SessionLocal()
@@ -75,17 +74,18 @@ def update_security(security_id: str, security_staff_data: SecurityStaffUpdate, 
 async def upload_violence_video(video: UploadFile = File(...)):
     global is_violence
     global buffer
-    path = 'resources/video/video.h264'
+    path = 'resources/video/violence.mp4'
+    # processed_file_path = 'resources/video/video.mp4'
 
     if is_violence:
-        return 0, 200
+        return {'res': 0}, 200
 
     video_bytes = await video.read()
     with open(path, 'wb') as f:
         f.write(video_bytes)
-    stream = ffmpeg.input(path)
-    stream = ffmpeg.output(stream, 'resources/video/video.mp4').overwrite_output()
-    ffmpeg.run(stream)
+    # stream = ffmpeg.input(path)
+
+    # ffmpeg.input(path).output(processed_file_path, vcod ec='libx264', preset='medium', profile='main').run()
     
     is_violence = True
     # save_path = os.path.join('resources/video', video.filename)
@@ -93,15 +93,11 @@ async def upload_violence_video(video: UploadFile = File(...)):
     # with open(save_path, 'wb') as buffer:
     #     shutil.copyfileobj(video.file, buffer)
     
-    return 1, 200
+    return {'res': 1}, 200
 
 @router.get("/violence/get_video")
 async def get_violence_video():
-    global buffer
-
-    file_path = os.path.join('resources/video', 'video.mp4')
-
-    return FileResponse(file_path, media_type='video/mp4')
+    return FileResponse('resources/video/violence.mp4', media_type='video/mp4')
 
 @router.get("/violence/is_violence")
 def is_violence_detected():
@@ -124,9 +120,9 @@ def deny_violence():
     is_violence = False
     return 0, 200
 
-# @router.get('/violence/accept')
-# def accept_violence():
-#     pass
+@router.get('/violence/accept')
+def accept_violence():
+    pass
 
 @router.post('/assign_missions', response_model=MissionSchemas)
 def assign_missions(missionData: Dict, db: Session = Depends(get_db)):
