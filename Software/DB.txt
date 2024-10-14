@@ -3,13 +3,13 @@ CREATE TABLE admin (
     username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    age INTEGER NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    age INTEGER CHECK (age >= 18 AND age <= 100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     address VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL,
     description TEXT,
-    role VARCHAR(50),
-    cccd VARCHAR(20) NOT NULL,
+    role INTEGER CHECK (role = 0) NOT NULL,
+    cccd VARCHAR(20) UNIQUE NOT NULL,
     avatar VARCHAR(255)
 );
 
@@ -18,18 +18,18 @@ CREATE TABLE police (
     username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    age INTEGER NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    age INTEGER CHECK (age >= 18 AND age <= 100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     address VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL,
     geolocation VARCHAR(100),
     description TEXT,
-    role VARCHAR(50) NOT NULL,
-    cccd VARCHAR(20) NOT NULL,
+    role INTEGER CHECK (role = 2) NOT NULL,
+    cccd VARCHAR(20) UNIQUE NOT NULL,
     avatar VARCHAR(255),
     certification VARCHAR(255) NOT NULL,
     work_history VARCHAR(255) NOT NULL,
-    joined DATE NOT NULL,
+    joined TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     work_at VARCHAR(255) NOT NULL
 );
 
@@ -38,15 +38,15 @@ CREATE TABLE security_staff (
     username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    age INTEGER NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    age INTEGER CHECK (age >= 18 AND age <= 100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     address VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL,
     description TEXT,
-    role VARCHAR(50) NOT NULL,
-    cccd VARCHAR(20) NOT NULL,
+    role INTEGER CHECK (role = 1) NOT NULL,
+    cccd VARCHAR(20) UNIQUE NOT NULL,
     avatar VARCHAR(255),
-    joined DATE NOT NULL,
+    joined TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     work_at VARCHAR(255) NOT NULL
 );
 
@@ -67,8 +67,26 @@ CREATE TABLE mission (
     security_staff_id INTEGER REFERENCES security_staff(id) ON DELETE CASCADE,
     iot_device_id INTEGER REFERENCES iot_device(id) ON DELETE CASCADE,
     location VARCHAR(255) NOT NULL,
-    assigned_police_ids VARCHAR(255) NOT NULL,
-    state VARCHAR(50) NOT NULL,
+    state BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE mission_police (
+    mission_id INTEGER REFERENCES mission(id) ON DELETE CASCADE,
+    police_id INTEGER REFERENCES police(id) ON DELETE CASCADE,
+    PRIMARY KEY (mission_id, police_id)
+);
+
+# Add student
+CREATE TABLE student (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    age INTEGER CHECK (age >= 3 AND age <= 25) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    address VARCHAR(255),
+    phone VARCHAR(20) UNIQUE,
+    student_id VARCHAR(20) UNIQUE NOT NULL,
+    avatar VARCHAR(255),
+    enrolled_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
